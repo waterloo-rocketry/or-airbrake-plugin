@@ -1,0 +1,44 @@
+<project name="AirbrakePlugin" basedir="." default="clean export">
+
+	<description>
+		Builds the plugin.
+	</description>
+	
+    <property name="src.dir" value="${basedir}/src"/>
+	<property name="build.dir" value="${basedir}/build"/>
+	<property name="openrocket.dir" value="/path/to/openrocket/folder"/>
+	<property environment="env"/>
+
+	<target name="build" description="Builds the plugin.">
+		<echo>Building...</echo>
+        <mkdir dir="${build.dir}"/>
+        <javac debug="true" srcdir="${src.dir}" destdir="${build.dir}" classpath="OpenRocket-22.03.jar" includeantruntime="false">
+    	</javac>
+		<echo>Done</echo>
+    </target>
+
+    <target name="run" depends="build" description="Builds the plugin, exports a jar to the OpenRocket Plugin folder, and launches OpenRocket">
+		<echo>Exporting JAR to Plugins...</echo>
+    	<jar destfile="${openrocket.dir}/Plugins/AirbrakePlugin.jar" basedir="${build.dir}"/>
+		<echo>Done</echo>
+		<echo>Running OpenRocket...</echo>
+    	<java jar="OpenRocket-22.03.jar" fork="true"/>
+		<echo>Done</echo>
+    </target>
+
+	<target name="clean run" depends="clean, run"/>
+
+	<target name="clean export" depends="clean, export"/>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+
+	<target name="export" depends="build" description="Builds the plugin, exports a jar to the current folder.">
+		<echo>Exporting JAR...</echo>
+		<jar destfile="AirbrakePlugin.jar" basedir="${build.dir}"/>
+		<echo>Done</echo>
+    </target>
+
+
+</project>
