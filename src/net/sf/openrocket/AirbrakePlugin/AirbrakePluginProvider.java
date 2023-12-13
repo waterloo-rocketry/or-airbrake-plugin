@@ -1,5 +1,5 @@
 
-package net.sf.openrocket.BrakeOR;
+package net.sf.openrocket.AirbrakePlugin;
 
 import net.sf.openrocket.plugin.Plugin;
 import net.sf.openrocket.simulation.extension.AbstractSimulationExtensionProvider;

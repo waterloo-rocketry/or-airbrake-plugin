@@ -1,4 +1,4 @@
-package net.sf.openrocket.BrakeOR;
+package net.sf.openrocket.AirbrakePlugin;
 
 import net.sf.openrocket.simulation.SimulationConditions;
 import net.sf.openrocket.simulation.exception.SimulationException;
