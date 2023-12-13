@@ -10,7 +10,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/OpenRocket-22.03.jar!/" />
+          <root url="jar://$MODULE_DIR$/OpenRocket-22.02.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
