@@ -5,29 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ebc4fc12-700d-4b06-b5a4-d720c84c06ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitmodules" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/OpenRocket_22_02.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AirbrakePlugin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/AirbrakePlugin.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/sf/openrocket/AirbrakePlugin/AirbrakePlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/AirbrakePlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/sf/openrocket/AirbrakePlugin/AirbrakePluginProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/AirbrakePluginProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/sf/openrocket/AirbrakePlugin/AirbrakePluginSimulationListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/AirbrakePluginSimulationListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/Airbrakes/Airbrakes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/AirbrakePlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/AirbrakePlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/AirbrakePluginSimulationListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/AirbrakePluginSimulationListener.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -40,17 +33,25 @@
   "associatedIndex": 7
 }]]></component>
   <component name="ProjectId" id="2ZdjuZrsjdE01FzAEiJwz61DCOe" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Maven.AirbrakePlugin [clean].executor": "Run",
     "Maven.AirbrakePlugin [package].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true"
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.keymap"
   }
 }]]></component>
   <component name="SharedIndexes">
