@@ -25,10 +25,10 @@ hs_err_pid*
 .project
 .classpath
 
-OpenRocket-22.03.jar
-
 /bin/
 /build/
 /.vscode/
+
+/target/
 
 AirbrakePlugin.jar
