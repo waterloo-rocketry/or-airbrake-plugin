@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="OpenRocket-23.09">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/OpenRocket-23.09.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

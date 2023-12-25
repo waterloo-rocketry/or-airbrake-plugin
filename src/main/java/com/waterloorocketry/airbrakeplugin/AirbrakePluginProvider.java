@@ -1,5 +1,5 @@
 
-package airbrakeplugin.AirbrakePlugin;
+package com.waterloorocketry.airbrakeplugin;
 
 import net.sf.openrocket.plugin.Plugin;
 import net.sf.openrocket.simulation.extension.AbstractSimulationExtensionProvider;
@@ -11,7 +11,7 @@ public class AirbrakePluginProvider extends AbstractSimulationExtensionProvider 
 	 * Lists the plugin in the simulation options.
 	 */
 	public AirbrakePluginProvider() {
-		super(AirbrakePlugin.class, "Wloo Rocketry", "Airbrakes");
+		super(AirbrakePlugin.class, "Waterloo Rocketry", "Airbrakes");
 	}
 	
 }

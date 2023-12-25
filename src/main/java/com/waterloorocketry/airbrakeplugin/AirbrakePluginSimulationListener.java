@@ -1,6 +1,7 @@
-package airbrakeplugin.AirbrakePlugin;
+package com.waterloorocketry.airbrakeplugin;
 
-import airbrakeplugin.AirbrakePlugin.Airbrakes.Airbrakes;
+import com.waterloorocketry.airbrakeplugin.Airbrakes.Airbrakes;
+import com.waterloorocketry.airbrakeplugin.Controllers.Controller;
 
 import net.sf.openrocket.simulation.FlightDataBranch;
 import net.sf.openrocket.simulation.FlightDataType;
@@ -14,11 +15,13 @@ import net.sf.openrocket.unit.UnitGroup;
  */
 public class AirbrakePluginSimulationListener extends AbstractSimulationListener {
 	private final Airbrakes airbrakes;
+	private final Controller controller;
 	private boolean burnout = false;
 
-	public AirbrakePluginSimulationListener(Airbrakes airbrakes) {
+	public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller) {
 		super();
 		this.airbrakes = airbrakes;
+		this.controller = controller;
 	}
 
 	/**
@@ -61,7 +64,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 			final double airbrakeExt = flightData.getLast(FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE));
 
 			// Calculate and override thrust given the current airbrake state
-			final double thrust = airbrakes.calculateDragForce(velocity, airbrakeExt);
+			final double thrust = airbrakes.calculateDragForce(controller, velocity, airbrakeExt);
 
 			return thrust;
 		}

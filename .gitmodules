@@ -1,4 +1,0 @@
-[submodule "openrocket"]
-	path = openrocket
-	url = https://github.com/openrocket/openrocket
-	branch = master

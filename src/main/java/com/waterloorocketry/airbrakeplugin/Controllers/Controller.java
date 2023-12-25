@@ -1,4 +1,4 @@
-package airbrakeplugin.AirbrakePlugin.Controllers;
+package com.waterloorocketry.airbrakeplugin.Controllers;
 
 import net.sf.openrocket.simulation.SimulationStatus;
 
@@ -9,7 +9,7 @@ public interface Controller {
 
     /**
      * Calculate the target airbrake extension given current flight conditions
-     * @return Target airbrake extension (percentage)
+     * @return Target airbrake extension percent [0, 1]
      */
     public double calculateTargetExt(SimulationStatus status);
 }

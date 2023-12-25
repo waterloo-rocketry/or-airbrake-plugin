@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+group 'com.waterloorocketry'
+version '1.0-SNAPSHOT'
+
+repositories {
+    flatDir {
+        dirs '/./'
+    }
+}
+
+dependencies {
+    implementation name: 'OpenRocket-23.09', version: '23.09', group: 'net.sf.openrocket'
+}
+
+tasks.register('run', Exec) {
+    dependsOn jar
+    commandLine 'cmd', '/c', 'java -cp "./OpenRocket-23.09.jar;build/libs/*" net.sf.openrocket.startup.OpenRocket'
+}

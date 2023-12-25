@@ -1,6 +1,7 @@
-package airbrakeplugin.AirbrakePlugin;
+package com.waterloorocketry.airbrakeplugin;
 
-import airbrakeplugin.AirbrakePlugin.Airbrakes.Airbrakes;
+import com.waterloorocketry.airbrakeplugin.Airbrakes.Airbrakes;
+import com.waterloorocketry.airbrakeplugin.Controllers.AlwaysOpenController;
 
 import net.sf.openrocket.simulation.SimulationConditions;
 import net.sf.openrocket.simulation.exception.SimulationException;
@@ -14,8 +15,7 @@ import java.util.List;
 /**
  * Initialize the plugin.
  */
-public class AirbrakePlugin extends AbstractSimulationExtension
-{
+public class AirbrakePlugin extends AbstractSimulationExtension {
     @Override
     public String getName()
     {
@@ -47,6 +47,6 @@ public class AirbrakePlugin extends AbstractSimulationExtension
     @Override
     public void initialize(SimulationConditions conditions) throws SimulationException
     {
-        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(new Airbrakes()));
+        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(new Airbrakes(), new AlwaysOpenController()));
     }
 }
