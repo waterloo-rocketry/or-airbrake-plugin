@@ -4,30 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ebc4fc12-700d-4b06-b5a4-d720c84c06ce" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/OpenRocket_23_09.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
+    <list default="true" id="ebc4fc12-700d-4b06-b5a4-d720c84c06ce" name="Changes" comment="use gradle instead, remember rocketry has an actual domain name">
       <change afterPath="$PROJECT_DIR$/src/main/java/com/waterloorocketry/airbrakeplugin/AirbrakePluginConfigurator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/waterloorocketry/airbrakeplugin/Controllers/AlwaysOpenController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitmodules" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AirbrakePlugin.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/AirbrakePlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/waterloorocketry/airbrakeplugin/AirbrakePlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/AirbrakePluginProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/waterloorocketry/airbrakeplugin/AirbrakePluginProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/AirbrakePluginSimulationListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/waterloorocketry/airbrakeplugin/AirbrakePluginSimulationListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/Airbrakes/Airbrakes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/waterloorocketry/airbrakeplugin/Airbrakes/Airbrakes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/airbrakeplugin/AirbrakePlugin/Controllers/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/waterloorocketry/airbrakeplugin/Controllers/Controller.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -246,6 +225,15 @@
       <option name="presentableId" value="Default" />
       <updated>1702759075057</updated>
     </task>
+    <task id="LOCAL-00001" summary="use gradle instead, remember rocketry has an actual domain name">
+      <option name="closed" value="true" />
+      <created>1703489894582</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1703489894582</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -258,6 +246,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="use gradle instead, remember rocketry has an actual domain name" />
+    <option name="LAST_COMMIT_MESSAGE" value="use gradle instead, remember rocketry has an actual domain name" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
