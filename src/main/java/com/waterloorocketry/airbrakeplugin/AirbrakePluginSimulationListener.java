@@ -16,6 +16,7 @@ import net.sf.openrocket.unit.UnitGroup;
 public class AirbrakePluginSimulationListener extends AbstractSimulationListener {
 	private final Airbrakes airbrakes;
 	private final Controller controller;
+	private final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
 	private boolean burnout = false;
 
 	public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller) {
@@ -25,22 +26,19 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 	}
 
 	/**
-	 * Called when the simulation starts.
-	 * @param status Holds flight status data during simulation.
-	 */
-	@Override
-	public void startSimulation(SimulationStatus status) {
-		System.out.println("Starting simulation");
-	}
-
-	/**
 	 * Runs before each timestep.
 	 * @param status
 	 * @return
 	 */
 	@Override
 	public boolean preStep(SimulationStatus status) {
-		// Call airbrake controller
+		if (burnout && !status.isApogeeReached()) {
+			FlightDataBranch flightData = status.getFlightData();
+
+			// Run controller, set in flightData
+			double ext = controller.calculateTargetExt(status);
+			flightData.setValue(airbrakeExtDataType, ext);
+		}
 
 		return true;
 	}
@@ -53,23 +51,21 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 	 */
 	@Override
 	public double preSimpleThrustCalculation(SimulationStatus status) {
-		// Do nothing if rocket is not in coast stage
-		if (!burnout || status.isApogeeReached()) {
-			return Double.NaN;
+		// Get latest flight conditions and airbrake extension
+		FlightDataBranch flightData = status.getFlightData();
+
+		final double velocity = flightData.getLast(FlightDataType.TYPE_VELOCITY_Z);
+		final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
+
+		// Calculate and override thrust. No coast check here since it's done in preStep
+		if (!Double.isNaN(airbrakeExt)) {
+            return airbrakes.calculateDragForce(controller, velocity, airbrakeExt);
 		} else {
-			// Get current flight conditions and airbrake extension
-			FlightDataBranch flightData = status.getFlightData();
-
-			final double velocity = flightData.getLast(FlightDataType.TYPE_VELOCITY_Z);
-			final double airbrakeExt = flightData.getLast(FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE));
-
-			// Calculate and override thrust given the current airbrake state
-			final double thrust = airbrakes.calculateDragForce(controller, velocity, airbrakeExt);
-
-			return thrust;
+			return Double.NaN;
 		}
 	}
 
+	// TODO: do burnout in a nicer way than practically being global var?
 	/**
 	 * Called when motor burnout occurs. This is handled as an event.
 	 * @param status
