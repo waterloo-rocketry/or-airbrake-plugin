@@ -3,7 +3,7 @@ package com.waterloorocketry.airbrakeplugin.Controllers;
 import net.sf.openrocket.simulation.SimulationStatus;
 
 public class PIDController implements Controller {
-    private static final double Kp = 0.00001;
+    private static final double Kp = 0.00005;
     private static final double Ti = 2;
     private static final double Td = 0.5;
 
