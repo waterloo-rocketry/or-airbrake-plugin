@@ -3,9 +3,9 @@ package com.waterloorocketry.airbrakeplugin.Controllers;
 import net.sf.openrocket.simulation.SimulationStatus;
 
 public class PIDController implements Controller {
-    private static final double Kp = 0.001;
-    private static final double Ti = 1.0;
-    private static final double Td = 1.0;
+    private static final double Kp = 0.00001;
+    private static final double Ti = 2;
+    private static final double Td = 0.5;
 
 
     private final double targetAltitude;
@@ -41,7 +41,7 @@ public class PIDController implements Controller {
 
         double ans = Kp * (error + integral / Ti + Td * derivative);
 
-        System.out.println("ans " + ans);
+        System.out.println("extension " + ans);
 
         // % airbrake extension [0-1]
         return Math.max(Math.min(ans, 1.0), 0.0);

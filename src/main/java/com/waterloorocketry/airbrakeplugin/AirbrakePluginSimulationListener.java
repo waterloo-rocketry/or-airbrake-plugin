@@ -55,7 +55,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 
 		// Calculate and override cd. No coast check here since it's done in preStep
 		if (!Double.isNaN(airbrakeExt)) {
-			forces.setCD(airbrakes.calculateCD(controller, velocity, airbrakeExt));
+			forces.setCDaxial(airbrakes.calculateCD(controller, velocity, airbrakeExt));
 		}
 		System.out.println("cd " + forces.getCD());
 

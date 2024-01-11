@@ -48,7 +48,6 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
     @Override
     public void initialize(SimulationConditions conditions) throws SimulationException
     {
-        new PIDController(9000);
-        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(new Airbrakes(), new AlwaysOpenController()));
+        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(new Airbrakes(), new PIDController(9000)));
     }
 }
