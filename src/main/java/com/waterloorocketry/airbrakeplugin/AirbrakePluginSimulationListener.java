@@ -3,10 +3,9 @@ package com.waterloorocketry.airbrakeplugin;
 import com.waterloorocketry.airbrakeplugin.Airbrakes.Airbrakes;
 import com.waterloorocketry.airbrakeplugin.Controllers.Controller;
 
-import net.sf.openrocket.simulation.FlightDataBranch;
-import net.sf.openrocket.simulation.FlightDataType;
-import net.sf.openrocket.simulation.FlightEvent;
-import net.sf.openrocket.simulation.SimulationStatus;
+import net.sf.openrocket.aerodynamics.AerodynamicForces;
+import net.sf.openrocket.simulation.*;
+import net.sf.openrocket.simulation.exception.SimulationException;
 import net.sf.openrocket.simulation.listeners.AbstractSimulationListener;
 import net.sf.openrocket.unit.UnitGroup;
 
@@ -44,25 +43,24 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 	}
 
 	/**
-	 * Called each timestep to override the sim's thrust before the sim can calculate it.
-	 * Returning NaN makes the sim ignore this plugin and calculate thrust normally instead.
-	 * @param status
-	 * @return The thrust to override with, or NaN if we don't want to override.
+	 * Overrides the coefficient of drag before the aerodynamic calculations are done each timestep.
 	 */
 	@Override
-	public double preSimpleThrustCalculation(SimulationStatus status) {
+	public AerodynamicForces preAerodynamicCalculation(SimulationStatus status) throws SimulationException {
+		AerodynamicForces aerodynamicForces = super.preAerodynamicCalculation(status);
+
 		// Get latest flight conditions and airbrake extension
 		FlightDataBranch flightData = status.getFlightData();
 
 		final double velocity = flightData.getLast(FlightDataType.TYPE_VELOCITY_Z);
 		final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
 
-		// Calculate and override thrust. No coast check here since it's done in preStep
-		if (!Double.isNaN(airbrakeExt)) {
-            return airbrakes.calculateDragForce(controller, velocity, airbrakeExt);
-		} else {
-			return Double.NaN;
+		// Calculate and override cd. No coast check here since it's done in preStep
+		if (aerodynamicForces != null && !Double.isNaN(airbrakeExt)) {
+			aerodynamicForces.setCD(airbrakes.calculateCD(controller, velocity, airbrakeExt));
 		}
+
+		return aerodynamicForces;
 	}
 
 	// TODO: do burnout in a nicer way than practically being global var?
