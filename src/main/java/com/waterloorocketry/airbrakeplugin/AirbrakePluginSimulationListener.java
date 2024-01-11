@@ -43,12 +43,10 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 	}
 
 	/**
-	 * Overrides the coefficient of drag before the aerodynamic calculations are done each timestep.
+	 * Overrides the coefficient of drag after the aerodynamic calculations are done each timestep.
 	 */
 	@Override
-	public AerodynamicForces preAerodynamicCalculation(SimulationStatus status) throws SimulationException {
-		AerodynamicForces aerodynamicForces = super.preAerodynamicCalculation(status);
-
+	public AerodynamicForces postAerodynamicCalculation(SimulationStatus status, AerodynamicForces forces) throws SimulationException {
 		// Get latest flight conditions and airbrake extension
 		FlightDataBranch flightData = status.getFlightData();
 
@@ -56,11 +54,12 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 		final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
 
 		// Calculate and override cd. No coast check here since it's done in preStep
-		if (aerodynamicForces != null && !Double.isNaN(airbrakeExt)) {
-			aerodynamicForces.setCD(airbrakes.calculateCD(controller, velocity, airbrakeExt));
+		if (!Double.isNaN(airbrakeExt)) {
+			forces.setCD(airbrakes.calculateCD(controller, velocity, airbrakeExt));
 		}
+		System.out.println("cd " + forces.getCD());
 
-		return aerodynamicForces;
+		return forces;
 	}
 
 	// TODO: do burnout in a nicer way than practically being global var?
