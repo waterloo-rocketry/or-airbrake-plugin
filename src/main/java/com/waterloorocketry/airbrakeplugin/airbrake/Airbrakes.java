@@ -1,6 +1,6 @@
-package com.waterloorocketry.airbrakeplugin.Airbrakes;
+package com.waterloorocketry.airbrakeplugin.airbrake;
 
-import com.waterloorocketry.airbrakeplugin.Controllers.Controller;
+import com.waterloorocketry.airbrakeplugin.controller.Controller;
 
 public class Airbrakes {
     public Airbrakes() {

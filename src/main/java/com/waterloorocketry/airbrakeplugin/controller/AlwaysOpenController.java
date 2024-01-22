@@ -1,4 +1,4 @@
-package com.waterloorocketry.airbrakeplugin.Controllers;
+package com.waterloorocketry.airbrakeplugin.controller;
 
 import net.sf.openrocket.simulation.SimulationStatus;
 

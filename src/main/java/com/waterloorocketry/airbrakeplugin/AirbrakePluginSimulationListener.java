@@ -1,7 +1,7 @@
 package com.waterloorocketry.airbrakeplugin;
 
-import com.waterloorocketry.airbrakeplugin.Airbrakes.Airbrakes;
-import com.waterloorocketry.airbrakeplugin.Controllers.Controller;
+import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
+import com.waterloorocketry.airbrakeplugin.controller.Controller;
 
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.simulation.*;

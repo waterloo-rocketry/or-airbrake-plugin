@@ -1,9 +1,8 @@
 package com.waterloorocketry.airbrakeplugin;
 
-import com.waterloorocketry.airbrakeplugin.Airbrakes.Airbrakes;
+import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
 
-import com.waterloorocketry.airbrakeplugin.Controllers.AlwaysOpenController;
-import com.waterloorocketry.airbrakeplugin.Controllers.PIDController;
+import com.waterloorocketry.airbrakeplugin.controller.PIDController;
 import net.sf.openrocket.simulation.SimulationConditions;
 import net.sf.openrocket.simulation.exception.SimulationException;
 import net.sf.openrocket.simulation.extension.AbstractSimulationExtension;
