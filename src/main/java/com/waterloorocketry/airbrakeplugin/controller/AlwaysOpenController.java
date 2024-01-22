@@ -1,10 +1,9 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
-import net.sf.openrocket.simulation.SimulationStatus;
-
 public class AlwaysOpenController implements Controller {
+
     @Override
-    public double calculateTargetExt(SimulationStatus status) {
+    public double calculateTargetExt(double[] flightData, double timestamp) {
         return 1;
     }
 }

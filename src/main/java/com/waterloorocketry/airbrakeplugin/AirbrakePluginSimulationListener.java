@@ -34,8 +34,21 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 		if (burnout && !status.isApogeeReached()) {
 			FlightDataBranch flightData = status.getFlightData();
 
+			double[] data = {
+					status.getRocketPosition().x,
+					status.getRocketPosition().y,
+					status.getRocketPosition().z,
+					status.getRocketVelocity().x,
+					status.getRocketVelocity().y,
+					status.getRocketVelocity().z,
+					status.getRocketOrientationQuaternion().getX(),
+					status.getRocketOrientationQuaternion().getY(),
+					status.getRocketOrientationQuaternion().getZ(),
+					status.getRocketOrientationQuaternion().getW()
+			};
+
 			// Run controller, set in flightData
-			double ext = controller.calculateTargetExt(status);
+			double ext = controller.calculateTargetExt(data, status.getSimulationTime());
 			flightData.setValue(airbrakeExtDataType, ext);
 		}
 

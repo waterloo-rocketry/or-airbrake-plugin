@@ -1,7 +1,5 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
-import net.sf.openrocket.simulation.SimulationStatus;
-
 public class PIDController implements Controller {
     private static final double Kp = 0.00005;
     private static final double Ti = 2;
@@ -28,16 +26,15 @@ public class PIDController implements Controller {
     private double integral = 0.0;
 
     @Override
-    public double calculateTargetExt(SimulationStatus status) {
-        double altitude = status.getRocketPosition().y;
+    public double calculateTargetExt(double[] flightData, double time) {
+        double altitude = flightData[1];
         double error = targetAltitude - altitude;
-        double time = status.getSimulationTime();
         if (lastState != null) {
             integral += (time - lastState.time) * (error + lastState.error) * 0.5;
         }
         lastState = new LastState(altitude, time);
 
-        double derivative = -status.getRocketVelocity().y;
+        double derivative = -flightData[4];
 
         double ans = Kp * (error + integral / Ti + Td * derivative);
 
