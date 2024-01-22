@@ -7,12 +7,12 @@ version '1.0-SNAPSHOT'
 
 repositories {
     flatDir {
-        dirs '/./'
+        dirs './'
     }
 }
 
 dependencies {
-    implementation name: 'OpenRocket-23.09', version: '23.09', group: 'net.sf.openrocket'
+    implementation name: 'OpenRocket', version: '23.09', group: 'net.sf.openrocket'
 }
 
 tasks.register('run', JavaExec) {
