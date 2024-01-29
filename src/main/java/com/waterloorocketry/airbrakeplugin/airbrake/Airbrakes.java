@@ -9,7 +9,7 @@ public class Airbrakes {
     /**
      * Calculate and return the coefficient of drag of the rocket given the current airbrake extension and flight conditions.
      * @param velocity
-     * @param airbrakeExt
+     * @param airbrakeExt [0, 1]
      * @return Rocket drag force
      */
     public double calculateCD(Controller controller, double velocity, double airbrakeExt) {

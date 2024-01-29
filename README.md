@@ -1,14 +1,26 @@
-# Airbrake plugin
+# Airbrake Plugin
 An OpenRocket plugin adding airbrake behaviour in simulations.
 
+At each simulation timestep, the plugin calculates airbrake extension given a Controller. Then, it calculates and overrides the simulation drag force given the current airbrake extension and dynamic pressure.
+
+## Setup
+### Requirements
+JDK 17 is required.
+
 ### Build
-Download and place the [latest](https://github.com/openrocket/openrocket/tags) OpenRocket jar in the root directory.
+1. Clone this repo.
+2. Download and place the [latest](https://github.com/openrocket/openrocket/tags) OpenRocket jar in the root directory.
+3. Build the plugin jar to `target/` using Gradle: `./gradlew jar` or run jar task via IDE.
 
-Build the plugin jar using Gradle.
+### Usage
+**Option 1 (manual):** Place the plugin jar in the OpenRocket plugins folder, most likely ```/home/user/.openrocket/Plugins``` or ```C:\Users\user\AppData\Roaming\OpenRocket\Plugins```.
 
-### Run
-To use plugin, place the plugin jar in the OpenRocket plugins folder, most likely found at ```/home/user/.openrocket/Plugins``` or ```C:\Users\user\AppData\Roaming\OpenRocket\Plugins```.
+**Option 2 (gradle run):** Use `./gradlew run` (or use an IDE navigator) to automatically build the jar then run OpenRocket. (This runs OpenRocket using Java via the jar in this folder.).
 
-The plugin will be available to add to simulations via ``` New Simulation > Simulation Options > Add extension > Waterloo Rocketry > Airbrakes```.
+---
 
-Alternatively, use the Gradle "run" task to automatically build the jar and run OpenRocket together.
+**OpenRocket must be restarted to load/reload the plugin.**
+
+Add the plugin to a simulation via ``` New Simulation > Simulation Options > Add extension > Waterloo Rocketry > Airbrakes```.
+
+Currently, there is no settings interface; the plugin is hard-coded to run the PID Controller.
