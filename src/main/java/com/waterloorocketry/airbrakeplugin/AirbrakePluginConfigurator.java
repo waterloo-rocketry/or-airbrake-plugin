@@ -2,6 +2,8 @@ package com.waterloorocketry.airbrakeplugin;
 
 import net.sf.openrocket.document.Simulation;
 import net.sf.openrocket.gui.SpinnerEditor;
+import net.sf.openrocket.gui.adaptors.BooleanModel;
+import net.sf.openrocket.gui.adaptors.DoubleModel;
 import net.sf.openrocket.gui.adaptors.IntegerModel;
 import net.sf.openrocket.gui.components.BasicSlider;
 import net.sf.openrocket.plugin.Plugin;
@@ -26,7 +28,15 @@ public class AirbrakePluginConfigurator extends AbstractSwingSimulationExtension
         this.panel = panel;
         this.extension = extension;
 
+        // passing `extension` into BooleanModel allows this config panel to
+        // use the getter/setter for AlwaysOpen which are defined in AirbrakePlugin
+        final BooleanModel alwaysOpen = new BooleanModel(extension, "AlwaysOpen");
+
+        JCheckBox checkbox = new JCheckBox(alwaysOpen);
+        checkbox.setText("Toggle always-open mode (instead of PID)");
+
+        panel.add(checkbox);
+
         return panel;
     }
-
 }
