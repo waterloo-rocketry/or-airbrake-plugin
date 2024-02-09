@@ -32,9 +32,9 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 	@Override
 	public boolean preStep(SimulationStatus status) {
 		FlightDataBranch flightData = status.getFlightData();
-		double ext = 0.0;
-		if (burnout && !status.isApogeeReached()) {
 
+		// Only run controller during coast phase. If not in coast, still set ext to 0 (better than NaN)
+		if (burnout && !status.isApogeeReached()) {
 			double[] data = {
 					status.getRocketPosition().x,
 					status.getRocketPosition().y,
@@ -48,10 +48,11 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 					status.getRocketOrientationQuaternion().getW()
 			};
 
-			// Run controller, set in flightData
-			controller.calculateTargetExt(data, status.getSimulationTime());
+			double ext = controller.calculateTargetExt(data, status.getSimulationTime());
+			flightData.setValue(airbrakeExtDataType, ext);
+		} else {
+			flightData.setValue(airbrakeExtDataType, 0);
 		}
-		flightData.setValue(airbrakeExtDataType, ext);
 
 		return true;
 	}
@@ -71,7 +72,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 		if (!Double.isNaN(airbrakeExt)) {
 			forces.setCDaxial(airbrakes.calculateCD(controller, velocity, airbrakeExt));
 		}
-		System.out.println("cd " + forces.getCD());
+		//System.out.println("cd " + forces.getCD());
 
 		return forces;
 	}

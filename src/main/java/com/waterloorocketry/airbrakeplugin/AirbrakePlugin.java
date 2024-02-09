@@ -2,6 +2,8 @@ package com.waterloorocketry.airbrakeplugin;
 
 import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
 
+import com.waterloorocketry.airbrakeplugin.controller.AlwaysOpenController;
+import com.waterloorocketry.airbrakeplugin.controller.Controller;
 import com.waterloorocketry.airbrakeplugin.controller.PIDController;
 import net.sf.openrocket.simulation.SimulationConditions;
 import net.sf.openrocket.simulation.exception.SimulationException;
@@ -9,6 +11,7 @@ import net.sf.openrocket.simulation.extension.AbstractSimulationExtension;
 import net.sf.openrocket.simulation.FlightDataType;
 import net.sf.openrocket.unit.UnitGroup;
 
+import javax.naming.ldap.Control;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +50,32 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
     @Override
     public void initialize(SimulationConditions conditions) throws SimulationException
     {
-        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(new Airbrakes(), new PIDController(9000)));
+        Controller controller;
+
+        // Use either PID or always-open scontroller depending on the configuration setting
+        if (isAlwaysOpen()) {
+            controller = new AlwaysOpenController();
+        } else {
+            controller = new PIDController(9000);
+        }
+
+        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(new Airbrakes(), controller));
+    }
+
+    /**
+     * Getter method for always-on mode
+     * @return whether always-on mode is enabled for airbrakes
+     */
+    public boolean isAlwaysOpen() {
+        return config.getBoolean("alwaysOpen", false);
+    }
+
+    /**
+     * Setter method for always-on mode. This is used by the plugin configurator panel.
+     * @param value enable/disable airbrakes always-on mode
+     */
+    public void setAlwaysOpen(boolean value) {
+        config.put("alwaysOpen", value);
+        fireChangeEvent();
     }
 }
