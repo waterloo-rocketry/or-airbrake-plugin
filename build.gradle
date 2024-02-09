@@ -9,10 +9,18 @@ repositories {
     flatDir {
         dirs './'
     }
+    mavenCentral()
 }
 
 dependencies {
     implementation name: 'OpenRocket', version: '23.09', group: 'net.sf.openrocket'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 tasks.register('run', JavaExec) {
