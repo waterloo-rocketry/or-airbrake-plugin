@@ -1,18 +1,16 @@
 package com.waterloorocketry.airbrakeplugin.airbrake;
 
-import com.waterloorocketry.airbrakeplugin.controller.Controller;
-
-public class Airbrakes {
-    public Airbrakes() {
-    }
-
+/**
+ * Airbrakes behavior interface
+ *
+ * The implementation this object determines the effect of the airbrakes
+ * on the rocket based on the extension state.
+ */
+public interface Airbrakes {
     /**
-     * Calculate and return the coefficient of drag of the rocket given the current airbrake extension and flight conditions.
-     * @param velocity
-     * @param airbrakeExt [0, 1]
-     * @return Rocket drag force
+     * Returns the coefficient of drag of the rocket based on the airbrakes extension amount
+     * @param ext Extension from 0 to 1
+     * @return The CD value
      */
-    public double calculateCD(Controller controller, double velocity, double airbrakeExt) {
-        return 0.5 + airbrakeExt;
-    }
+    double calculateCD(double ext);
 }

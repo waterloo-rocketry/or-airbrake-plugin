@@ -8,8 +8,8 @@ import java.util.List;
  * Single-variable linar interpolation calculator
  */
 public class SingleVarLinearInterp {
-    final double[] xs;
-    final double[] fs;
+    private final double[] xs;
+    private final double[] fs;
 
     /**
      * Constructs the calculator with given keys and values

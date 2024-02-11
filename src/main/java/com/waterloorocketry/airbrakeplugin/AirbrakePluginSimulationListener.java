@@ -49,6 +49,9 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 			};
 
 			double ext = controller.calculateTargetExt(data, status.getSimulationTime());
+			if (!(0.0 <= ext && ext <= 1.0)) {
+				throw new IndexOutOfBoundsException("airbrakes extension amount was not from 0 to 1");
+			}
 			flightData.setValue(airbrakeExtDataType, ext);
 		} else {
 			flightData.setValue(airbrakeExtDataType, 0);
@@ -70,7 +73,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 
 		// Calculate and override cd. No coast check here since it's done in preStep
 		if (!Double.isNaN(airbrakeExt)) {
-			forces.setCDaxial(airbrakes.calculateCD(controller, velocity, airbrakeExt));
+			forces.setCDaxial(airbrakes.calculateCD(airbrakeExt));
 		}
 		//System.out.println("cd " + forces.getCD());
 

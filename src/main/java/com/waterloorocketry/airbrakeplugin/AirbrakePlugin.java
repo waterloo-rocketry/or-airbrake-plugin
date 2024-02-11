@@ -2,6 +2,7 @@ package com.waterloorocketry.airbrakeplugin;
 
 import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
 
+import com.waterloorocketry.airbrakeplugin.airbrake.LinearInterpAirbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.AlwaysOpenController;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
 import com.waterloorocketry.airbrakeplugin.controller.PIDController;
@@ -59,7 +60,8 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
             controller = new PIDController(9000);
         }
 
-        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(new Airbrakes(), controller));
+        Airbrakes airbrakes = new LinearInterpAirbrakes(new double[] { 0.0, 1.0 }, new double[] { 0.5, 1.5 });
+        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller));
     }
 
     /**
