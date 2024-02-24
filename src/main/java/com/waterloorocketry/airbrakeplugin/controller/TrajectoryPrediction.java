@@ -78,21 +78,18 @@ public class TrajectoryPrediction {
 
         double mass = 39.564; // mass of rocket after burnout (kg)
 
-        double Fg = -gravitational_acceleration() * mass; // force of gravity (N)
-        double Fd = drag_force(); // force of drag (N)
-
         double prevAlt = 0.0; // variable to store previous altitude
 
         while (altitude >= prevAlt) {
+            // update forces of drag and gravity from new altitude
+            double Fg = -gravitational_acceleration() * mass; // force of gravity (N)
+            double Fd = drag_force(); // force of drag (N)
+
             // to check if altitude is decreasing to exit the loop
             prevAlt = altitude;
 
             // update velocity and altitude
             rk4(h, Fg+Fd, mass);
-
-            // update forces of drag and gravity from new altitude
-            Fd = drag_force();
-            Fg = -gravitational_acceleration()*mass;
         }
 
         return altitude;
