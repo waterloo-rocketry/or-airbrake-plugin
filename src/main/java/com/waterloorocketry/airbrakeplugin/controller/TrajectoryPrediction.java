@@ -1,11 +1,11 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
 public class TrajectoryPrediction {
-    private static double velocity;
-    private static double altitude;
-    private static double drag_coef;
+    private double velocity;
+    private double altitude;
+    private double drag_coef;
 
-    private static double mass;
+    private double mass;
 
     TrajectoryPrediction(double vel, double alt, double cd, double m) {
         velocity = vel;
@@ -15,7 +15,7 @@ public class TrajectoryPrediction {
     }
 
     /** @return derivative of velocity: acceleration */
-    private static double velocity_derivative(double force) {
+    private double velocity_derivative(double force) {
         return force/mass;
     }
 
