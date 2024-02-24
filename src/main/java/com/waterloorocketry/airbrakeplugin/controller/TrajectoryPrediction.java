@@ -1,20 +1,14 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
 public class TrajectoryPrediction {
-    private static double velocity;
-    private static double altitude;
-    private static double drag_coef;
+    private double velocity;
+    private double altitude;
+    private double drag_coef;
 
     TrajectoryPrediction(double vel, double alt, double cd) {
         velocity = vel;
         altitude = alt;
         drag_coef = cd;
-    }
-
-    // Returns derivative of altitude (displacement): velocity
-    // This function is redundant, but it makes rk4 more intuitive
-    private static double altitude_derivative(double v) {
-        return v;
     }
 
     // Returns derivative of velocity: acceleration
@@ -25,16 +19,16 @@ public class TrajectoryPrediction {
     // rk4 method to integrate altitude (y) from velocity (v) and integrate velocity (v) from acceleration (force/mass)
     // requires time step h
     private void rk4(double h, double force, double mass) {
-        double ka1 = h * altitude_derivative(velocity);
+        double ka1 = h * velocity;
         double kv1 = h * velocity_derivative(force, mass);
 
-        double ka2 = h * altitude_derivative(velocity + h*ka1/2);
+        double ka2 = h * (velocity + h*ka1/2);
         double kv2 = h * velocity_derivative(force + h*kv1/2, mass);
 
-        double ka3 = h * altitude_derivative(velocity + h*ka2/2);
+        double ka3 = h * (velocity + h*ka2/2);
         double kv3 = h * velocity_derivative(force + h*kv2/2, mass);
 
-        double ka4 = h * altitude_derivative(velocity + h*ka3);
+        double ka4 = h * (velocity + h*ka3);
         double kv4 = h * velocity_derivative(force + h*kv3, mass);
 
         altitude = (altitude + (ka1 + 2*ka2 + 2*ka3 + ka4)/6);
