@@ -1,10 +1,11 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
 public class TrajectoryPrediction {
-    private double velocity;
-    private double altitude;
-    private double drag_coef;
-    private double mass;
+    private static double velocity;
+    private static double altitude;
+    private static double drag_coef;
+
+    private static double mass;
 
     TrajectoryPrediction(double vel, double alt, double cd, double m) {
         velocity = vel;
@@ -14,24 +15,24 @@ public class TrajectoryPrediction {
     }
 
     /** @return derivative of velocity: acceleration */
-    private static double velocity_derivative(double force, double mass) {
+    private static double velocity_derivative(double force) {
         return force/mass;
     }
 
     // rk4 method to integrate altitude from velocity, and integrate velocity from acceleration (force/mass)
     // requires time step h
-    private void rk4(double h, double force, double mass) {
+    private void rk4(double h, double force) {
         double ka1 = h * velocity;
-        double kv1 = h * velocity_derivative(force, mass);
+        double kv1 = h * velocity_derivative(force);
 
         double ka2 = h * (velocity + h*ka1/2);
-        double kv2 = h * velocity_derivative(force + h*kv1/2, mass);
+        double kv2 = h * velocity_derivative(force + h*kv1/2);
 
         double ka3 = h * (velocity + h*ka2/2);
-        double kv3 = h * velocity_derivative(force + h*kv2/2, mass);
+        double kv3 = h * velocity_derivative(force + h*kv2/2);
 
         double ka4 = h * (velocity + h*ka3);
-        double kv4 = h * velocity_derivative(force + h*kv3, mass);
+        double kv4 = h * velocity_derivative(force + h*kv3);
 
         altitude = (altitude + (ka1 + 2*ka2 + 2*ka3 + ka4)/6);
         velocity = (velocity + (kv1 + 2*kv2 + 2*kv3 + kv4)/6);
@@ -89,9 +90,16 @@ public class TrajectoryPrediction {
             prevAlt = altitude;
 
             // update velocity and altitude
-            rk4(h, Fg+Fd, mass);
+            rk4(h, Fg+Fd);
         }
 
         return altitude;
+    }
+
+    public void updateInstance(double vel, double alt, double cd, double m) {
+        velocity = vel;
+        altitude = alt;
+        drag_coef = cd;
+        mass = m;
     }
 }
