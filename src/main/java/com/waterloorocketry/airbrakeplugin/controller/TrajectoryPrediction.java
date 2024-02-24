@@ -4,19 +4,21 @@ public class TrajectoryPrediction {
     private double velocity;
     private double altitude;
     private double drag_coef;
+    private double mass;
 
-    TrajectoryPrediction(double vel, double alt, double cd) {
+    TrajectoryPrediction(double vel, double alt, double cd, double m) {
         velocity = vel;
         altitude = alt;
         drag_coef = cd;
+        mass = m;
     }
 
-    // Returns derivative of velocity: acceleration
+    /** @return derivative of velocity: acceleration */
     private static double velocity_derivative(double force, double mass) {
         return force/mass;
     }
 
-    // rk4 method to integrate altitude (y) from velocity (v) and integrate velocity (v) from acceleration (force/mass)
+    // rk4 method to integrate altitude from velocity, and integrate velocity from acceleration (force/mass)
     // requires time step h
     private void rk4(double h, double force, double mass) {
         double ka1 = h * velocity;
@@ -75,8 +77,6 @@ public class TrajectoryPrediction {
     public double get_max_altitude() {
 
         double h = 0.01; // interval of change for rk4
-
-        double mass = 39.564; // mass of rocket after burnout (kg)
 
         double prevAlt = 0.0; // variable to store previous altitude
 

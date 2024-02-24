@@ -27,7 +27,7 @@ public class PIDController implements Controller {
 
     @Override
     public double calculateTargetExt(double[] flightData, double time) {
-        double altitude = new TrajectoryPrediction(flightData[4], flightData[1], 0.5).get_max_altitude();
+        double altitude = new TrajectoryPrediction(flightData[4], flightData[1], 0.5, 39.564).get_max_altitude();
         double error = targetAltitude - altitude;
         if (lastState != null) {
             integral += (time - lastState.time) * (error + lastState.error) * 0.5;
