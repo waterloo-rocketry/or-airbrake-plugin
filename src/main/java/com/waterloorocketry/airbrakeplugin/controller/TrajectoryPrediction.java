@@ -14,12 +14,17 @@ public class TrajectoryPrediction {
         mass = m;
     }
 
-    /** @return derivative of velocity: acceleration */
+    /**
+     *  @return derivative of velocity: acceleration
+     */
     private double velocity_derivative(double force) {
         return force/mass;
     }
-    /** rk4 method to integrate altitude from velocity, and integrate velocity from acceleration (force/mass)
-    requires time step h */
+    /**
+     * rk4 method to integrate altitude from velocity, and integrate velocity from acceleration (force/mass)
+     * @param h time step to integrate over
+     * @param force sum of forces acting on rocket at given time
+     */
     private void rk4(double h, double force) {
         double ka1 = h * velocity;
         double kv1 = h * velocity_derivative(force);
@@ -64,7 +69,7 @@ public class TrajectoryPrediction {
         return density;
     }
 
-    /** Calculate force of drag from drag coefficent and altitude */
+    /** Calculate force of drag from drag coefficient and altitude */
     private double drag_force() {
         double ref_area = 0.01824; // reference area (m^2)
         double fluid_dens = air_density(); // air density (kg/m^3)
