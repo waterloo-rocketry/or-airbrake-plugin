@@ -18,9 +18,8 @@ public class TrajectoryPrediction {
     private double velocity_derivative(double force) {
         return force/mass;
     }
-
-    // rk4 method to integrate altitude from velocity, and integrate velocity from acceleration (force/mass)
-    // requires time step h
+    /** rk4 method to integrate altitude from velocity, and integrate velocity from acceleration (force/mass)
+    requires time step h */
     private void rk4(double h, double force) {
         double ka1 = h * velocity;
         double kv1 = h * velocity_derivative(force);
@@ -38,12 +37,12 @@ public class TrajectoryPrediction {
         velocity = (velocity + (kv1 + 2*kv2 + 2*kv3 + kv4)/6);
     }
 
-    // calculate acceleration due to gravity from altitude
+    /** calculate acceleration due to gravity from altitude */
     private double gravitational_acceleration() {
         return 9.80665 * Math.pow(6371009 / ( 6371009 + altitude), 2);
     }
 
-    // Calculate air density from altitude
+    /** Calculate air density from altitude */
     private double air_density() {
         // Based on US Standard Atmosphere 1976
 
@@ -65,7 +64,7 @@ public class TrajectoryPrediction {
         return density;
     }
 
-    // Calculate force of drag from drag coefficent and altitude
+    /** Calculate force of drag from drag coefficent and altitude */
     private double drag_force() {
         double ref_area = 0.01824; // reference area (m^2)
         double fluid_dens = air_density(); // air density (kg/m^3)
@@ -74,7 +73,7 @@ public class TrajectoryPrediction {
         return -0.5 * drag_coef * ref_area * fluid_dens * velocity * velocity;
     }
 
-    // calculates max apogee from velocity, altitude, and drag coefficient
+    /** calculates max apogee from velocity, altitude, and drag coefficient */
     public double get_max_altitude() {
 
         double h = 0.01; // interval of change for rk4
