@@ -57,7 +57,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         if (isAlwaysOpen()) {
             controller = new AlwaysOpenController();
         } else {
-            controller = new PIDController(9000);
+            controller = new PIDController(7000);
         }
 
         Airbrakes airbrakes = new LinearInterpAirbrakes(new double[] { 0.0, 1.0 }, new double[] { 0.5, 1.5 });

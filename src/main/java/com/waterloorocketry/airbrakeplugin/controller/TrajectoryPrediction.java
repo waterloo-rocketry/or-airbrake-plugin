@@ -1,6 +1,13 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
 public class TrajectoryPrediction {
+    private static final double GRAV_BASE = 9.80665;
+    private static final double GRAV_COEFF = 6371009;
+    private static final double AIRBRAKES_MAX_AREA = 7.74; //in^2
+    private static final double ROCKET_BASE_AREA = 28.274; //in^2
+    private static final double SIM_ALTITUDE = 1000; //All drag sims conducted at 1000m above sea level
+    private static final double tol = 0.00001;
+
     /**
      *  @return acceleration (m/s^2)
      */
@@ -34,15 +41,14 @@ public class TrajectoryPrediction {
 
     /** @return acceleration due to gravity */
     private static double gravitational_acceleration(double altitude) {
-        return 9.80665 * Math.pow(6371009 / ( 6371009 + altitude), 2);
+        return GRAV_BASE * Math.pow(GRAV_COEFF / ( GRAV_COEFF + altitude), 2);
     }
 
     /** @return air density (kg/m^3)
      * @param altitude (m)
-     * Same method used for PyAnsys simulations, verified to be correct*/
+     * Same method used for PyAnsys simulations, verified to be correct */
     private static double air_density(double altitude) {
         // Based on US Standard Atmosphere 1976
-
         double temperature, pressure, density;
 
         if (altitude <= 11000) {  // Troposphere
@@ -67,24 +73,26 @@ public class TrajectoryPrediction {
      * 100% extension: 36.041 (in^2)
      * */
     private static double rocket_area(double extension) {
-        return (0.0774 * extension) + 28.274;
+        return (AIRBRAKES_MAX_AREA * extension) + ROCKET_BASE_AREA;
     }
 
-    /**@return drag force value based off Ansys simulations
+    /**@return drag force value based on curves produced by Ansys at fixed extensions
      * @param velocity is used to lookup drag value
-     * @param extension MUST BE EITHER 0, 50, 100. USed to determing which function to use and to adjust for rocket area
-     * air_density is adjusted for since all sims were calculated at 1000m
+     * @param extension MUST BE EITHER 0, 0.5, or 1. Used to determing which function to use and to adjust for rocket area
      * */
-    private static double lookup_drag(int extension, double velocity) {
+    private static double lookup_drag(double fixed_extension, double velocity) {
         double drag;
-        if (extension == 0) {
+        if (Math.abs(fixed_extension) < tol) {
             drag = (0.0035 * velocity * velocity) + (0.1317 * velocity) - 5.0119;
-        } else if (extension == 50) {
+        } 
+        else if (Math.abs(fixed_extension - 0.5) < tol) {
             drag = (0.0045 * velocity * velocity) + (0.1031 * velocity) - 3.8231;
-        } else { // extension == 100
+        } 
+        else { // fixed_extension == 1
             drag = (0.006*velocity*velocity) + (0.1038*velocity) - 4.2522;
         }
-        return drag / rocket_area(extension) / air_density(1000);
+
+        return drag / rocket_area(fixed_extension) / air_density(SIM_ALTITUDE); //adjust simulation drag for altitude and extension amount
     }
 
     /**@return drag force acting on rocket
@@ -93,48 +101,69 @@ public class TrajectoryPrediction {
      * @param altitude used to adjust fluid density since Ansys sims were calculated at 1000m
      * */
     private static double interpolate_drag(double extension, double velocity, double altitude) {
-        if (extension == 100 || extension == 50 ||  extension == 0) {
+        double drag;
+        /* if (extension == 100 || extension == 50 ||  extension == 0) {
             int ext = (int)extension;
-            return air_density(altitude) * rocket_area(ext) * lookup_drag(ext, velocity);
+            drag = air_density(altitude) * rocket_area(ext) * lookup_drag(ext, velocity);
         }
         else if (extension > 50.0) {
             double diff = lookup_drag(100, velocity) - lookup_drag(50, velocity);
             extension = (extension - 50) * 2;
-            return air_density(altitude) * rocket_area(extension) * (diff * extension) + lookup_drag(50, velocity);
+            drag = air_density(altitude) * rocket_area(extension) * (diff * extension) + lookup_drag(50, velocity);
         }
         else { // extension < 50
             double diff = lookup_drag(50, velocity) - lookup_drag(0, velocity);
             extension *= 2;
-            return air_density(altitude) * rocket_area(extension) * (diff * extension) + lookup_drag(0, velocity);
+            drag = air_density(altitude) * rocket_area(extension) * (diff * extension) + lookup_drag(0, velocity);
+        } */
+
+        double dx = 0.5;
+        double y_1;
+        double y_2;
+        double x_1;
+        if (extension > 0.5) {
+            x_1 = 0.5;
+            y_1 = lookup_drag(0.5, velocity);
+            y_2 = lookup_drag(1, velocity);
         }
+        else { // extension < 0.5
+            x_1 = 0;
+            y_1 = lookup_drag(0, velocity);
+            y_2 = lookup_drag(0.5, velocity);
+        }
+        drag = y_1 + (y_2-y_1) / dx * (extension - x_1);
+        drag = air_density(altitude) * rocket_area(extension) * drag;
+
+         System.out.println("Fdrag:" + drag + "N");
+        return drag;
     }
 
     /** @return max apogee
      * @param velocity vertical velocity (m/s)
      * @param altitude (m)
-     * @param airbrake_ext % extension of airbrakes 0-100 NOT 0-1
+     * @param airbrake_ext extension of airbrakes, 0-1
      * @param mass (kg)*/
     public static double get_max_altitude(double velocity, double altitude, double airbrake_ext, double mass) {
 
         double h = 0.01; // interval of change for rk4
         double prevAlt = 0.0; // variable to store previous altitude
-        double[] alt_vel = {altitude, velocity}; // array to store altitude and velocity
+        double[] states = {altitude, velocity}; // array to store altitude and velocity
 
-        while (alt_vel[0] >= prevAlt) {
+        while (states[0] >= prevAlt) {
             // update forces of drag and gravity from new altitude
-            double Fg = -gravitational_acceleration(alt_vel[0]) * mass; // force of gravity (N)
-            double Fd = -interpolate_drag(airbrake_ext, alt_vel[1], alt_vel[0]); // force of drag (N)
+            double Fg = -gravitational_acceleration(states[0]) * mass; // force of gravity (N)
+            double Fd = -interpolate_drag(airbrake_ext, states[1], states[0]); // force of drag (N)
 
             // to check if altitude is decreasing to exit the loop
-            prevAlt = alt_vel[0];
+            prevAlt = states[0];
 
             // update velocity and altitude
-            rk4(h, Fg+Fd, mass, alt_vel);
+            rk4(h, Fg+Fd, mass, states);
 
-            System.out.println(alt_vel[0]);
+            System.out.println("pred alt: " + states[0] + "m");
         }
 
-        return alt_vel[0];
+        return states[0];
     }
 }
 

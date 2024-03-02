@@ -11,5 +11,5 @@ public interface Controller {
      * @param timestamp Timestamp of the controller calculation
      * @return Target airbrake extension percent [0, 1]
      */
-    double calculateTargetExt(double[] flightData, double timestamp);
+    double calculateTargetExt(double[] flightData, double timestamp, double extension);
 }

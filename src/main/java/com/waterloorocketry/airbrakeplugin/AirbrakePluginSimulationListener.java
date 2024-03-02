@@ -17,6 +17,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 	private final Controller controller;
 	private final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
 	private boolean burnout = false;
+	private double ext = 0.0;
 
 	public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller) {
 		super();
@@ -48,7 +49,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 					status.getRocketOrientationQuaternion().getW()
 			};
 
-			double ext = controller.calculateTargetExt(data, status.getSimulationTime());
+			ext = controller.calculateTargetExt(data, status.getSimulationTime(), ext);
 			if (!(0.0 <= ext && ext <= 1.0)) {
 				throw new IndexOutOfBoundsException("airbrakes extension amount was not from 0 to 1");
 			}
