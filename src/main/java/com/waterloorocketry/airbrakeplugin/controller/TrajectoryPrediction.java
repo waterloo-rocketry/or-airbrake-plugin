@@ -1,8 +1,8 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
 public class TrajectoryPrediction {
-    private static final double GRAV_BASE = 9.80665;
-    private static final double GRAV_COEFF = 6371009;
+    private static final double GRAV_AT_SEA_LVL = 9.80665;
+    private static final double EARTH_MEAN_RADIUS = 6371009;
     private static final double AIRBRAKES_MAX_AREA = 7.74; //in^2
     private static final double ROCKET_BASE_AREA = 28.274; //in^2
     private static final double SIM_ALTITUDE = 1000; //All drag sims conducted at 1000m above sea level
@@ -41,7 +41,7 @@ public class TrajectoryPrediction {
 
     /** @return acceleration due to gravity */
     private static double gravitational_acceleration(double altitude) {
-        return GRAV_BASE * Math.pow(GRAV_COEFF / ( GRAV_COEFF + altitude), 2);
+        return GRAV_AT_SEA_LVL * Math.pow(EARTH_MEAN_RADIUS / ( EARTH_MEAN_RADIUS + altitude), 2);
     }
 
     /** @return air density (kg/m^3)
@@ -78,7 +78,7 @@ public class TrajectoryPrediction {
 
     /**@return drag force value based on curves produced by Ansys at fixed extensions
      * @param velocity is used to lookup drag value
-     * @param extension MUST BE EITHER 0, 0.5, or 1. Used to determing which function to use and to adjust for rocket area
+     * @param fixed_extension MUST BE EITHER 0, 0.5, or 1. Used to determine which function to use and to adjust for rocket area
      * */
     private static double lookup_drag(double fixed_extension, double velocity) {
         double drag;
