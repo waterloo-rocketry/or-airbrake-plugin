@@ -82,6 +82,7 @@ public class TrajectoryPrediction {
      * */
     private static double lookup_drag(double fixed_extension, double velocity) {
         double drag;
+        System.out.println("vel input to drag calc:" + velocity + "m/s");
         if (Math.abs(fixed_extension) < tol) {
             drag = (0.0035 * velocity * velocity) + (0.1317 * velocity) - 5.0119;
         } 
@@ -92,7 +93,7 @@ public class TrajectoryPrediction {
             drag = (0.006 * velocity * velocity) + (0.1038 * velocity) - 4.2522;
         }
 
-        return drag / rocket_area(fixed_extension) / air_density(SIM_ALTITUDE); //adjust simulation drag for altitude and extension amount
+        return drag; /// rocket_area(fixed_extension) / air_density(SIM_ALTITUDE); //adjust simulation drag for altitude and extension amount
     }
 
     /**@return drag force acting on rocket
@@ -131,8 +132,9 @@ public class TrajectoryPrediction {
             y_1 = lookup_drag(0, velocity);
             y_2 = lookup_drag(0.5, velocity);
         }
+        System.out.println("y1: " + y_1 + " y2:" + y_2);
         drag = y_1 + (y_2-y_1) / dx * (extension - x_1);
-        drag = air_density(altitude) * rocket_area(extension) * drag;
+        //drag = air_density(altitude) * rocket_area(extension) * drag;
 
          System.out.println("Fdrag:" + drag + "N");
         return drag;
@@ -169,7 +171,7 @@ public class TrajectoryPrediction {
      * @param mass (kg)*/
     public static double get_max_altitude(double velocity, double altitude, double airbrake_ext, double mass) {
 
-        double h = 0.01; // interval of change for rk4
+        double h = 0.05; // interval of change for rk4
         double prevAlt = 0.0; // variable to store previous altitude
         double[] states = {altitude, velocity}; // array to store altitude and velocity
 
