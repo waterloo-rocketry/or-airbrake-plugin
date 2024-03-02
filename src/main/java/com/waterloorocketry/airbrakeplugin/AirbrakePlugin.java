@@ -29,6 +29,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
     // Create new FlightDataType to hold airbrake extension percentage
     private static final FlightDataType airbrakeExt = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
     private static final ArrayList<FlightDataType> types = new ArrayList<FlightDataType>();
+    private static final double TARGET_APOGEE = 7000; //m
 
     /**
      * Initialize the new airbrakeExt datatype we created by returning it here
@@ -57,7 +58,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         if (isAlwaysOpen()) {
             controller = new AlwaysOpenController();
         } else {
-            controller = new PIDController(7000);
+            controller = new PIDController(TARGET_APOGEE);
         }
 
         Airbrakes airbrakes = new LinearInterpAirbrakes(new double[] { 0.0, 1.0 }, new double[] { 0.5, 1.5 });

@@ -2,6 +2,7 @@ package com.waterloorocketry.airbrakeplugin;
 
 import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
+import com.waterloorocketry.airbrakeplugin.controller.TrajectoryPrediction;
 
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.simulation.*;
@@ -69,12 +70,13 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 		// Get latest flight conditions and airbrake extension
 		FlightDataBranch flightData = status.getFlightData();
 
+		final double altitude = flightData.getLast(FlightDataType.TYPE_ALTITUDE);
 		final double velocity = flightData.getLast(FlightDataType.TYPE_VELOCITY_Z);
 		final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
-
+		
 		// Calculate and override cd. No coast check here since it's done in preStep
 		if (!Double.isNaN(airbrakeExt)) {
-			forces.setCDaxial(airbrakes.calculateCD(airbrakeExt));
+			forces.setCDaxial(TrajectoryPrediction.interpolate_cd(airbrakeExt, velocity, altitude));
 		}
 		//System.out.println("cd " + forces.getCD());
 

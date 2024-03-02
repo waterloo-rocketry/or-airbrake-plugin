@@ -89,7 +89,7 @@ public class TrajectoryPrediction {
             drag = (0.0045 * velocity * velocity) + (0.1031 * velocity) - 3.8231;
         } 
         else { // fixed_extension == 1
-            drag = (0.006*velocity*velocity) + (0.1038*velocity) - 4.2522;
+            drag = (0.006 * velocity * velocity) + (0.1038 * velocity) - 4.2522;
         }
 
         return drag / rocket_area(fixed_extension) / air_density(SIM_ALTITUDE); //adjust simulation drag for altitude and extension amount
@@ -136,6 +136,30 @@ public class TrajectoryPrediction {
 
          System.out.println("Fdrag:" + drag + "N");
         return drag;
+    }
+
+    /** TODO: rather hack way of overriding for OR to do its step. This should be replaced ideally by overriding OR's drag calculation, rather than just the CD parameter
+     * @return Cd value corresponding to interpolated drag force
+     */
+    public static double interpolate_cd(double extension, double velocity, double altitude){
+        double drag;
+        double dx = 0.5;
+        double y_1;
+        double y_2;
+        double x_1;
+        if (extension > 0.5) {
+            x_1 = 0.5;
+            y_1 = lookup_drag(0.5, velocity);
+            y_2 = lookup_drag(1, velocity);
+        }
+        else { // extension < 0.5
+            x_1 = 0;
+            y_1 = lookup_drag(0, velocity);
+            y_2 = lookup_drag(0.5, velocity);
+        }
+        drag = y_1 + (y_2-y_1) / dx * (extension - x_1);
+        
+        return drag / (velocity * velocity) * 2; //the drag out of the lookup table is divided out by (area*density) already 
     }
 
     /** @return max apogee
