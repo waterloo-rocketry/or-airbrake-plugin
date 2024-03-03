@@ -74,9 +74,10 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 		final double velocity = flightData.getLast(FlightDataType.TYPE_VELOCITY_Z);
 		final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
 		
-		// Calculate and override cd. No coast check here since it's done in preStep
-		if (!Double.isNaN(airbrakeExt)) {
-			forces.setCDaxial(TrajectoryPrediction.interpolate_cd(airbrakeExt, velocity, altitude));
+		// Override CD only during coast, and until velocity is too small for the drag tabulation to be accurate
+		if (status.isMotorIgnited() && !status.isApogeeReached() && velocity > 23.5) {
+			double calculatedCd = TrajectoryPrediction.interpolate_cd(airbrakeExt, velocity, altitude);
+			forces.setCDaxial(calculatedCd);
 		}
 		//System.out.println("cd " + forces.getCD());
 
