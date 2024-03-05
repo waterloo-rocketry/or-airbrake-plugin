@@ -53,9 +53,9 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
     {
         Controller controller;
 
-        // Use either PID or always-open scontroller depending on the configuration setting
+        // Use either PID or always-open controller depending on the configuration setting
         if (isAlwaysOpen()) {
-            controller = new AlwaysOpenController();
+            controller = new AlwaysOpenController(getAlwaysOpenExt());
         } else {
             controller = new PIDController(getTargetApogee(), getKp(), getKi(), getKd());
         }
@@ -111,6 +111,15 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
     public void setKd(double Kd) {
         config.put("Kd", Kd);
+        fireChangeEvent();
+    }
+
+    public double getAlwaysOpenExt() {
+        return config.getDouble("alwaysOpenExt", 0.0);
+    }
+
+    public void setAlwaysOpenExt(double ext) {
+        config.put("alwaysOpenExt", ext);
         fireChangeEvent();
     }
 }
