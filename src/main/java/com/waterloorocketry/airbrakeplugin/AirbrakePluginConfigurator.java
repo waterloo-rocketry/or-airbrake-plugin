@@ -6,8 +6,10 @@ import net.sf.openrocket.gui.adaptors.BooleanModel;
 import net.sf.openrocket.gui.adaptors.DoubleModel;
 import net.sf.openrocket.gui.adaptors.IntegerModel;
 import net.sf.openrocket.gui.components.BasicSlider;
+import net.sf.openrocket.gui.components.UnitSelector;
 import net.sf.openrocket.plugin.Plugin;
 import net.sf.openrocket.simulation.extension.AbstractSwingSimulationExtensionConfigurator;
+import net.sf.openrocket.unit.UnitGroup;
 
 import javax.swing.*;
 
@@ -28,14 +30,24 @@ public class AirbrakePluginConfigurator extends AbstractSwingSimulationExtension
         this.panel = panel;
         this.extension = extension;
 
-        // passing `extension` into BooleanModel allows this config panel to
+        // ------------------ Add alwaysOpen mode checkbox ------------------
+        panel.add(new JLabel("Enable Always-Open mode (no PID):"));
+
+        // Passing `extension` into BooleanModel allows this config panel to
         // use the getter/setter for AlwaysOpen which are defined in AirbrakePlugin
         final BooleanModel alwaysOpen = new BooleanModel(extension, "AlwaysOpen");
 
         JCheckBox checkbox = new JCheckBox(alwaysOpen);
-        checkbox.setText("Toggle always-open mode (instead of PID)");
+        panel.add(checkbox, "wrap");
 
-        panel.add(checkbox);
+        // ------------------ Add target apogee input box ------------------
+        DoubleModel m = new DoubleModel(extension, "TargetApogee", UnitGroup.UNITS_DISTANCE, 0);
+
+        panel.add(new JLabel("Target apogee:"));
+
+        JSpinner spin = new JSpinner(m.getSpinnerModel());
+        spin.setEditor(new SpinnerEditor(spin));
+        panel.add(spin, "w 65lp!");
 
         return panel;
     }

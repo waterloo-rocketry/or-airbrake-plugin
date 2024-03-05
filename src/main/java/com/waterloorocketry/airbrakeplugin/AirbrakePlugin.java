@@ -57,7 +57,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         if (isAlwaysOpen()) {
             controller = new AlwaysOpenController();
         } else {
-            controller = new PIDController(9000);
+            controller = new PIDController(getTargetApogee());
         }
 
         Airbrakes airbrakes = new LinearInterpAirbrakes(new double[] { 0.0, 1.0 }, new double[] { 0.5, 1.5 });
@@ -78,6 +78,23 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
      */
     public void setAlwaysOpen(boolean value) {
         config.put("alwaysOpen", value);
+        fireChangeEvent();
+    }
+
+    /**
+     * Get target apogee as inputted in the plugin config panel
+     * @return Target apogee (meters)
+     */
+    public double getTargetApogee() {
+        return config.getDouble("targetApogee", 10000.0);
+    }
+
+    /**
+     * Used by the plugin config panel
+     * @param targetApogee (meters)
+     */
+    public void setTargetApogee(double targetApogee) {
+        config.put("targetApogee", targetApogee);
         fireChangeEvent();
     }
 }
