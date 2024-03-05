@@ -4,8 +4,6 @@ import net.sf.openrocket.document.Simulation;
 import net.sf.openrocket.gui.SpinnerEditor;
 import net.sf.openrocket.gui.adaptors.BooleanModel;
 import net.sf.openrocket.gui.adaptors.DoubleModel;
-import net.sf.openrocket.gui.adaptors.IntegerModel;
-import net.sf.openrocket.gui.components.BasicSlider;
 import net.sf.openrocket.gui.components.UnitSelector;
 import net.sf.openrocket.plugin.Plugin;
 import net.sf.openrocket.simulation.extension.AbstractSwingSimulationExtensionConfigurator;
@@ -42,6 +40,9 @@ public class AirbrakePluginConfigurator extends AbstractSwingSimulationExtension
 
         // Add input rows
         addRow("Target apogee", "TargetApogee", UnitGroup.UNITS_DISTANCE, 0.0);
+        addRow("Kp", "Kp", UnitGroup.UNITS_COEFFICIENT, 0.0);
+        addRow("Ki", "Ki", UnitGroup.UNITS_COEFFICIENT, 0.0);
+        addRow("Kd", "Kd", UnitGroup.UNITS_COEFFICIENT, 0.0);
 
         return panel;
     }
@@ -63,6 +64,6 @@ public class AirbrakePluginConfigurator extends AbstractSwingSimulationExtension
         panel.add(spin, "w 65lp!");
 
         UnitSelector unit = new UnitSelector(m);
-        panel.add(unit, "w 25");
+        panel.add(unit, "w 25 wrap");
     }
 }

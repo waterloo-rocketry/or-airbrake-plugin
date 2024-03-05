@@ -57,44 +57,60 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         if (isAlwaysOpen()) {
             controller = new AlwaysOpenController();
         } else {
-            controller = new PIDController(getTargetApogee());
+            controller = new PIDController(getTargetApogee(), getKp(), getKi(), getKd());
         }
 
         Airbrakes airbrakes = new LinearInterpAirbrakes(new double[] { 0.0, 1.0 }, new double[] { 0.5, 1.5 });
         conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller));
     }
 
-    /**
-     * Getter method for always-on mode
-     * @return whether always-on mode is enabled for airbrakes
-     */
+    //
+    // Getter/setters for all the values that are user-adjustable via the plugin config panel
+    // The setters are used indirectly in AirbrakePluginConfigurator
+    //
+
     public boolean isAlwaysOpen() {
         return config.getBoolean("alwaysOpen", false);
     }
 
-    /**
-     * Setter method for always-on mode. This is used by the plugin configurator panel.
-     * @param value enable/disable airbrakes always-on mode
-     */
     public void setAlwaysOpen(boolean value) {
         config.put("alwaysOpen", value);
         fireChangeEvent();
     }
 
-    /**
-     * Get target apogee as inputted in the plugin config panel
-     * @return Target apogee (meters)
-     */
     public double getTargetApogee() {
         return config.getDouble("targetApogee", 10000.0);
     }
 
-    /**
-     * Used by the plugin config panel
-     * @param targetApogee (meters)
-     */
     public void setTargetApogee(double targetApogee) {
         config.put("targetApogee", targetApogee);
+        fireChangeEvent();
+    }
+
+    public double getKp() {
+        return config.getDouble("Kp", 0.0);
+    }
+
+    public void setKp(double Kp) {
+        config.put("Kp", Kp);
+        fireChangeEvent();
+    }
+
+    public double getKi() {
+        return config.getDouble("Ki", 0.0);
+    }
+
+    public void setKi(double Ki) {
+        config.put("Ki", Ki);
+        fireChangeEvent();
+    }
+
+    public double getKd() {
+        return config.getDouble("Kd", 0.0);
+    }
+
+    public void setKd(double Kd) {
+        config.put("Kd", Kd);
         fireChangeEvent();
     }
 }
