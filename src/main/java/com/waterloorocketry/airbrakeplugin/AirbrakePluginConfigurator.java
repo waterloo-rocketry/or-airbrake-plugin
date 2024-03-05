@@ -40,15 +40,29 @@ public class AirbrakePluginConfigurator extends AbstractSwingSimulationExtension
         JCheckBox checkbox = new JCheckBox(alwaysOpen);
         panel.add(checkbox, "wrap");
 
-        // ------------------ Add target apogee input box ------------------
-        DoubleModel m = new DoubleModel(extension, "TargetApogee", UnitGroup.UNITS_DISTANCE, 0);
+        // Add input rows
+        addRow("Target apogee", "TargetApogee", UnitGroup.UNITS_DISTANCE, 0.0);
 
-        panel.add(new JLabel("Target apogee:"));
+        return panel;
+    }
+
+    /**
+     * Helper to build an input box + spinner + unit selector. Copied from OR examples
+     * @param prompt
+     * @param fieldName
+     * @param units
+     * @param min
+     */
+    private void addRow(String prompt, String fieldName, UnitGroup units, double min) {
+        panel.add(new JLabel(prompt + ":"));
+
+        DoubleModel m = new DoubleModel(extension, fieldName, units, min);
 
         JSpinner spin = new JSpinner(m.getSpinnerModel());
         spin.setEditor(new SpinnerEditor(spin));
         panel.add(spin, "w 65lp!");
 
-        return panel;
+        UnitSelector unit = new UnitSelector(m);
+        panel.add(unit, "w 25");
     }
 }
