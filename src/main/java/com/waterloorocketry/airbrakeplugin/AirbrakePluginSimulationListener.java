@@ -79,7 +79,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 			double calculatedCd = TrajectoryPrediction.interpolate_cd(airbrakeExt, velocity, altitude);
 			forces.setCDaxial(calculatedCd);
 		}
-		//System.out.println("cd " + forces.getCD());
+		System.out.println("cd " + forces.getCD());
 
 		return forces;
 	}

@@ -3,10 +3,10 @@ package com.waterloorocketry.airbrakeplugin.controller;
 public class TrajectoryPrediction {
     private static final double GRAV_AT_SEA_LVL = 9.80665;
     private static final double EARTH_MEAN_RADIUS = 6371009;
-    private static final double AIRBRAKES_MAX_AREA = 7.74; //in^2
-    private static final double ROCKET_BASE_AREA = 28.274; //in^2
+    private static final double AIRBRAKES_MAX_AREA = 0.004993538; //m^2
+    private static final double ROCKET_BASE_AREA = 0.0182412538; //in^2
     private static final double SIM_ALTITUDE = 1000; //All drag sims conducted at 1000m above sea level
-    private static final double tol = 0.00001;
+    private static final double TOL = 0.00001;
 
     /**
      *  @return acceleration (m/s^2)
@@ -39,13 +39,14 @@ public class TrajectoryPrediction {
         integrals[1] = (integrals[1] + (kv1 + 2*kv2 + 2*kv3 + kv4)/6);
     }
 
-    /** @return acceleration due to gravity */
+    /** @param altitude (m)
+     * @return acceleration due to gravity (m/s^2) */
     private static double gravitational_acceleration(double altitude) {
         return GRAV_AT_SEA_LVL * Math.pow(EARTH_MEAN_RADIUS / ( EARTH_MEAN_RADIUS + altitude), 2);
     }
 
-    /** @return air density (kg/m^3)
-     * @param altitude (m)
+    /** @param altitude (m)
+     * @return air density (kg/m^3)
      * Same method used for PyAnsys simulations, verified to be correct */
     private static double air_density(double altitude) {
         // Based on US Standard Atmosphere 1976
@@ -69,9 +70,7 @@ public class TrajectoryPrediction {
 
     /**@return rocket's cross-sectional area from airbrake extension
      * Does not take into account fins
-     * 0% extension: 28.274 (in^2)
-     * 100% extension: 36.041 (in^2)
-     * */
+     * @param extension extension of the airbrakes (0-1) */
     private static double rocket_area(double extension) {
         return (AIRBRAKES_MAX_AREA * extension) + ROCKET_BASE_AREA;
     }
@@ -82,46 +81,36 @@ public class TrajectoryPrediction {
      * */
     private static double lookup_drag(double fixed_extension, double velocity) {
         double drag;
-        System.out.println("vel input to drag calc:" + velocity + "m/s");
-        if (Math.abs(fixed_extension) < tol) {
+
+        if (Math.abs(fixed_extension) < TOL) { //0%
             drag = (0.0035 * velocity * velocity) + (0.1317 * velocity) - 5.0119;
         } 
-        else if (Math.abs(fixed_extension - 0.5) < tol) {
+        else if (Math.abs(fixed_extension - 0.5) < TOL) { //50%
             drag = (0.0045 * velocity * velocity) + (0.1031 * velocity) - 3.8231;
         } 
-        else { // fixed_extension == 1
+        else { // 100%
             drag = (0.006 * velocity * velocity) + (0.1038 * velocity) - 4.2522;
         }
 
-        return drag; /// rocket_area(fixed_extension) / air_density(SIM_ALTITUDE); //adjust simulation drag for altitude and extension amount
+        return drag / rocket_area(fixed_extension) / air_density(SIM_ALTITUDE); //adjust simulation drag for altitude and extension amount
     }
 
     /**@return drag force acting on rocket
-     * @param extension of air brakes, used for adjusting rocket area and iterpolating Ansys sims
+     * @param extension of air brakes, used for adjusting rocket area and iterpolating Ansys sims (0-1)
      * @param velocity used to lookup drag force from Ansys sims
      * @param altitude used to adjust fluid density since Ansys sims were calculated at 1000m
      * */
     private static double interpolate_drag(double extension, double velocity, double altitude) {
         double drag;
-        /* if (extension == 100 || extension == 50 ||  extension == 0) {
-            int ext = (int)extension;
-            drag = air_density(altitude) * rocket_area(ext) * lookup_drag(ext, velocity);
-        }
-        else if (extension > 50.0) {
-            double diff = lookup_drag(100, velocity) - lookup_drag(50, velocity);
-            extension = (extension - 50) * 2;
-            drag = air_density(altitude) * rocket_area(extension) * (diff * extension) + lookup_drag(50, velocity);
-        }
-        else { // extension < 50
-            double diff = lookup_drag(50, velocity) - lookup_drag(0, velocity);
-            extension *= 2;
-            drag = air_density(altitude) * rocket_area(extension) * (diff * extension) + lookup_drag(0, velocity);
-        } */
-
         double dx = 0.5;
         double y_1;
         double y_2;
         double x_1;
+
+        if(extension < TOL || extension > 1 + TOL){
+            throw new IndexOutOfBoundsException("airbrakes extension amount was not from 0 to 1");
+        }
+
         if (extension > 0.5) {
             x_1 = 0.5;
             y_1 = lookup_drag(0.5, velocity);
@@ -132,11 +121,11 @@ public class TrajectoryPrediction {
             y_1 = lookup_drag(0, velocity);
             y_2 = lookup_drag(0.5, velocity);
         }
-        System.out.println("y1: " + y_1 + " y2:" + y_2);
-        drag = y_1 + (y_2-y_1) / dx * (extension - x_1);
-        //drag = air_density(altitude) * rocket_area(extension) * drag;
 
-         System.out.println("Fdrag:" + drag + "N");
+        drag = y_1 + (y_2-y_1) / dx * (extension - x_1);
+        drag = air_density(altitude) * rocket_area(extension) * drag; //correct the drag using the actual airbrake extension area and air density
+
+        //System.out.println("Fdrag: " + drag + "N");
         return drag;
     }
 
@@ -144,24 +133,8 @@ public class TrajectoryPrediction {
      * @return Cd value corresponding to interpolated drag force
      */
     public static double interpolate_cd(double extension, double velocity, double altitude){
-        double drag;
-        double dx = 0.5;
-        double y_1;
-        double y_2;
-        double x_1;
-        if (extension > 0.5) {
-            x_1 = 0.5;
-            y_1 = lookup_drag(0.5, velocity);
-            y_2 = lookup_drag(1, velocity);
-        }
-        else { // extension < 0.5
-            x_1 = 0;
-            y_1 = lookup_drag(0, velocity);
-            y_2 = lookup_drag(0.5, velocity);
-        }
-        drag = y_1 + (y_2-y_1) / dx * (extension - x_1);
-        
-        return drag / (velocity * velocity) * 2; //the drag out of the lookup table is divided out by (area*density) already 
+        double drag_force = interpolate_drag(extension, velocity, altitude);
+        return 2 * drag_force / (air_density(altitude) * rocket_area(extension) * (velocity * velocity)); //Cd
     }
 
     /** @return max apogee

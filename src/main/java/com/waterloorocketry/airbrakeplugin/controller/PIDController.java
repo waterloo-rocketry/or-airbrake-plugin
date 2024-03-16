@@ -1,9 +1,9 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
 public class PIDController implements Controller {
-    private static final double Kp = 0.00005;
-    private static final double Ti = 0.1;
-    private static final double Td = 0.05;
+    private static final double Kp = 0.0005;
+    private static final double Ti = 1000;
+    private static final double Td = 0.0000;
     private static final double ROCKET_BURNOUT_MASS = 39.564; //kg
     private final double targetAltitude;
 
