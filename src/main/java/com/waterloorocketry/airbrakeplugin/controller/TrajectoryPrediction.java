@@ -107,7 +107,7 @@ public class TrajectoryPrediction {
         double y_2;
         double x_1;
 
-        if(extension < TOL || extension > 1 + TOL){
+        if(extension < 0 || extension > 1 + TOL){
             throw new IndexOutOfBoundsException("airbrakes extension amount was not from 0 to 1");
         }
 
