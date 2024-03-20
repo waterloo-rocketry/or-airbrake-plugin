@@ -8,6 +8,11 @@ public class TrajectoryPrediction {
     private static final double SIM_ALTITUDE = 1000; //All drag sims conducted at 1000m above sea level
     private static final double TOL = 0.00001;
 
+    private static class RK4Integrals {
+        public double vel;
+        public double alt;
+    }
+
     /**
      *  @return acceleration (m/s^2)
      */
@@ -20,23 +25,23 @@ public class TrajectoryPrediction {
      * @param h time step
      * @param force sum of forces acting on rocket at given time (N)
      * @param mass of rocket (kg)
-     * @param integrals, altitude (m) integrals[0] and velocity (m/s) integrals[1]
+     * @param integrals, altitude (m) and velocity (m/s
      */
-    private static void rk4(double h, double force, double mass, double[] integrals) {
-        double ka1 = h * integrals[1];
+    private static void rk4(double h, double force, double mass, RK4Integrals integrals) {
+        double ka1 = h * integrals.alt;
         double kv1 = h * velocity_derivative(force, mass);
 
-        double ka2 = h * (integrals[1] + h*ka1/2);
+        double ka2 = h * (integrals.alt + h*ka1/2);
         double kv2 = h * velocity_derivative(force + h*kv1/2, mass);
 
-        double ka3 = h * (integrals[1] + h*ka2/2);
+        double ka3 = h * (integrals.alt + h*ka2/2);
         double kv3 = h * velocity_derivative(force + h*kv2/2, mass);
 
-        double ka4 = h * (integrals[1] + h*ka3);
+        double ka4 = h * (integrals.alt + h*ka3);
         double kv4 = h * velocity_derivative(force + h*kv3, mass);
 
-        integrals[0] = (integrals[0] + (ka1 + 2*ka2 + 2*ka3 + ka4)/6);
-        integrals[1] = (integrals[1] + (kv1 + 2*kv2 + 2*kv3 + kv4)/6);
+        integrals.vel = (integrals.vel + (ka1 + 2*ka2 + 2*ka3 + ka4)/6);
+        integrals.alt = (integrals.alt + (kv1 + 2*kv2 + 2*kv3 + kv4)/6);
     }
 
     /** @param altitude (m)
@@ -146,23 +151,26 @@ public class TrajectoryPrediction {
 
         double h = 0.05; // interval of change for rk4
         double prevAlt = 0.0; // variable to store previous altitude
-        double[] states = {altitude, velocity}; // array to store altitude and velocity
 
-        while (states[0] >= prevAlt) {
+        RK4Integrals states = new RK4Integrals();
+        states.alt = altitude;
+        states.vel = velocity;
+
+        while (states.alt >= prevAlt) {
             // update forces of drag and gravity from new altitude
-            double Fg = -gravitational_acceleration(states[0]) * mass; // force of gravity (N)
-            double Fd = -interpolate_drag(airbrake_ext, states[1], states[0]); // force of drag (N)
+            double Fg = -gravitational_acceleration(states.alt) * mass; // force of gravity (N)
+            double Fd = -interpolate_drag(airbrake_ext, states.vel, states.alt); // force of drag (N)
 
             // to check if altitude is decreasing to exit the loop
-            prevAlt = states[0];
+            prevAlt = states.alt;
 
             // update velocity and altitude
             rk4(h, Fg+Fd, mass, states);
 
-            System.out.println("pred alt: " + states[0] + "m");
+            // System.out.println("pred alt: " + states.alt + "m");
         }
 
-        return states[0];
+        return altitude;
     }
 }
 
