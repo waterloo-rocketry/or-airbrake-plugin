@@ -25,15 +25,15 @@ public class PIDController implements Controller {
     private double integral = 0.0;
 
     @Override
-    public double calculateTargetExt(double[] flightData, double time, double extension) {
-        double altitude = TrajectoryPrediction.get_max_altitude(flightData[5], flightData[2], extension, ROCKET_BURNOUT_MASS); //z displacement, z velocity, ...; +Z is "up" in OR
+    public double calculateTargetExt(RocketState rocketState, double time, double extension) {
+        double altitude = TrajectoryPrediction.get_max_altitude(rocketState.velocityZ, rocketState.positionZ, extension, ROCKET_BURNOUT_MASS); //z displacement, z velocity, ...; +Z is "up" in OR
         double error = targetAltitude - altitude;
         if (lastState != null) {
             integral += (time - lastState.time) * (error + lastState.error) * 0.5;
         }
         lastState = new LastState(altitude, time);
 
-        double derivative = -flightData[4];
+        double derivative = -rocketState.velocityY;
 
         double ans = Kp * (error + integral / Ti + Td * derivative);
 
