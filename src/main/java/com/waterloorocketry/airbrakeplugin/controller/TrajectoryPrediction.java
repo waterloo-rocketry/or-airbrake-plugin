@@ -4,7 +4,7 @@ public class TrajectoryPrediction {
     private static final double GRAV_AT_SEA_LVL = 9.80665;
     private static final double EARTH_MEAN_RADIUS = 6371009;
     private static final double AIRBRAKES_MAX_AREA = 0.004993538; //m^2
-    private static final double ROCKET_BASE_AREA = 0.0182412538; //in^2
+    private static final double ROCKET_BASE_AREA = 0.0182412538; //m^2
     private static final double SIM_ALTITUDE = 1000; //All drag sims conducted at 1000m above sea level
     private static final double TOL = 0.00001;
 
