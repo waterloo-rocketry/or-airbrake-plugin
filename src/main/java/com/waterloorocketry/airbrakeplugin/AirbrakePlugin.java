@@ -29,6 +29,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
     // Create new FlightDataType to hold airbrake extension percentage
     private static final FlightDataType airbrakeExt = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
     private static final ArrayList<FlightDataType> types = new ArrayList<FlightDataType>();
+    private static final double TARGET_APOGEE = 8000; //m
 
     /**
      * Initialize the new airbrakeExt datatype we created by returning it here

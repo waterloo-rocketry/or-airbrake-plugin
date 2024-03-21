@@ -1,6 +1,7 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
 public class PIDController implements Controller {
+    private static final double ROCKET_BURNOUT_MASS = 39.564; //kg
     private final double Kp;
     private final double Ki;
     private final double Kd;
@@ -27,15 +28,15 @@ public class PIDController implements Controller {
     private double integral = 0.0;
 
     @Override
-    public double calculateTargetExt(double[] flightData, double time) {
-        double altitude = TrajectoryPrediction.get_max_altitude(flightData[4], flightData[1], 0.5, 39.564);
+    public double calculateTargetExt(RocketState rocketState, double time, double extension) {
+        double altitude = TrajectoryPrediction.get_max_altitude(rocketState.velocityZ, rocketState.positionZ, extension, ROCKET_BURNOUT_MASS); //z displacement, z velocity, ...; +Z is "up" in OR
         double error = targetAltitude - altitude;
         if (lastState != null) {
             integral += (time - lastState.time) * (error + lastState.error) * 0.5;
         }
         lastState = new LastState(altitude, time);
 
-        double derivative = -flightData[4];
+        double derivative = -rocketState.velocityY;
 
         // PLACEHOLDER CODE TO RETURN A VALID DOUBLE. not actual pid
         double output = Kp + Ki + Kd;

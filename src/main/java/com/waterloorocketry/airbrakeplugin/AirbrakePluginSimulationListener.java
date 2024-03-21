@@ -2,6 +2,7 @@ package com.waterloorocketry.airbrakeplugin;
 
 import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
+import com.waterloorocketry.airbrakeplugin.controller.TrajectoryPrediction;
 
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.simulation.*;
@@ -17,6 +18,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 	private final Controller controller;
 	private final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
 	private boolean burnout = false;
+	private double ext = 0.0;
 
 	public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller) {
 		super();
@@ -35,20 +37,20 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 
 		// Only run controller during coast phase. If not in coast, still set ext to 0 (better than NaN)
 		if (burnout && !status.isApogeeReached()) {
-			double[] data = {
-					status.getRocketPosition().x,
-					status.getRocketPosition().y,
-					status.getRocketPosition().z,
-					status.getRocketVelocity().x,
-					status.getRocketVelocity().y,
-					status.getRocketVelocity().z,
-					status.getRocketOrientationQuaternion().getX(),
-					status.getRocketOrientationQuaternion().getY(),
-					status.getRocketOrientationQuaternion().getZ(),
-					status.getRocketOrientationQuaternion().getW()
-			};
+			Controller.RocketState data = new Controller.RocketState();
 
-			double ext = controller.calculateTargetExt(data, status.getSimulationTime());
+			data.positionX = status.getRocketPosition().x;
+			data.positionY = status.getRocketPosition().y;
+			data.positionZ = status.getRocketPosition().z;
+			data.velocityX = status.getRocketVelocity().x;
+			data.velocityY = status.getRocketVelocity().y;
+			data.velocityZ = status.getRocketVelocity().z;
+			data.orientationX = status.getRocketOrientationQuaternion().getX();
+			data.orientationY = status.getRocketOrientationQuaternion().getY();
+			data.orientationZ = status.getRocketOrientationQuaternion().getZ();
+			data.orientationW = status.getRocketOrientationQuaternion().getW();
+
+			ext = controller.calculateTargetExt(data, status.getSimulationTime(), ext);
 			if (!(0.0 <= ext && ext <= 1.0)) {
 				throw new IndexOutOfBoundsException("airbrakes extension amount was not from 0 to 1");
 			}
@@ -68,14 +70,16 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 		// Get latest flight conditions and airbrake extension
 		FlightDataBranch flightData = status.getFlightData();
 
+		final double altitude = flightData.getLast(FlightDataType.TYPE_ALTITUDE);
 		final double velocity = flightData.getLast(FlightDataType.TYPE_VELOCITY_Z);
 		final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
-
-		// Calculate and override cd. No coast check here since it's done in preStep
-		if (!Double.isNaN(airbrakeExt)) {
-			forces.setCDaxial(airbrakes.calculateCD(airbrakeExt));
+		
+		// Override CD only during coast, and until velocity is too small for the drag tabulation to be accurate
+		if (burnout && !status.isApogeeReached() && velocity > 23.5) {
+			double calculatedCd = TrajectoryPrediction.interpolate_cd(airbrakeExt, velocity, altitude);
+			forces.setCDaxial(calculatedCd);
 		}
-		//System.out.println("cd " + forces.getCD());
+		System.out.println("cd " + forces.getCD());
 
 		return forces;
 	}
