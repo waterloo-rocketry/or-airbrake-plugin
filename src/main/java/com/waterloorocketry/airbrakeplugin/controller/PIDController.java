@@ -1,13 +1,16 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
 public class PIDController implements Controller {
-    private static final double Kp = 0.0005;
-    private static final double Ti = 1000;
-    private static final double Td = 0.0000;
     private static final double ROCKET_BURNOUT_MASS = 39.564; //kg
+    private final double Kp;
+    private final double Ki;
+    private final double Kd;
     private final double targetAltitude;
 
-    public PIDController(double targetAltitude) {
+    public PIDController(double targetAltitude, double Kp, double Ki, double Kd) {
+        this.Kp = Kp;
+        this.Ki = Ki;
+        this.Kd = Kd;
         this.targetAltitude = targetAltitude;
     }
 
@@ -35,11 +38,12 @@ public class PIDController implements Controller {
 
         double derivative = -rocketState.velocityY;
 
-        double ans = Kp * (error + integral / Ti + Td * derivative);
+        // PLACEHOLDER CODE TO RETURN A VALID DOUBLE. not actual pid
+        double output = Kp + Ki + Kd;
 
-        System.out.println("extension " + ans);
+        System.out.println("extension " + output);
 
         // % airbrake extension [0-1]
-        return Math.max(Math.min(ans, 1.0), 0.0);
+        return Math.max(Math.min(output, 1.0), 0.0);
     }
 }
