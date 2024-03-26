@@ -6,7 +6,7 @@ import com.waterloorocketry.airbrakeplugin.simulated.SingleVarLinearInterp;
  * Linear interpolation between simulated data points
  */
 public class LinearInterpAirbrakes implements Airbrakes {
-    private final SingleVarLinearInterp interp;
+    private final SingleVarLinearInterp<Void, SingleVarLinearInterp.ConstantValue> interp;
 
     /**
      * Constructs an airbrakes object using simulated data points
@@ -17,11 +17,15 @@ public class LinearInterpAirbrakes implements Airbrakes {
         if (!(exts[0] == 0.0 && exts[exts.length - 1] == 1.0)) {
             throw new IllegalArgumentException("extension amounts must go from exactly 0.0 to 1.0");
         }
-        interp = new SingleVarLinearInterp(exts, cds);
+        SingleVarLinearInterp.ConstantValue[] values = new SingleVarLinearInterp.ConstantValue[cds.length];
+        for (int i = 0; i < cds.length; i++) {
+            values[i] = new SingleVarLinearInterp.ConstantValue(cds[i]);
+        }
+        interp = new SingleVarLinearInterp<>(exts, values);
     }
 
     @Override
     public double calculateCD(double ext) {
-        return interp.compute(ext);
+        return interp.compute(null, ext);
     }
 }
