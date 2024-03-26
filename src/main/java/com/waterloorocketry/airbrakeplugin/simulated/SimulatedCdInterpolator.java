@@ -25,8 +25,8 @@ public class SimulatedCdInterpolator implements Interpolator<SimulatedCdInterpol
 
     @Override
     public double compute(Data data) {
-        NavigableMap<Double, Double> m = new ComputedNavigableMap<>(fs, (f) -> f.compute(data.velocity));
-        LinearInterpolator interp = new LinearInterpolator(m);
+        NavigableMap<Double, Double> mapExtToInterpolant = new ComputedNavigableMap<>(fs, (f) -> f.compute(data.velocity));
+        LinearInterpolator interp = new LinearInterpolator(mapExtToInterpolant);
         return interp.compute(data.extension);
     }
 }
