@@ -1,6 +1,6 @@
 package com.waterloorocketry.airbrakeplugin.simulated;
 
-import com.waterloorocketry.airbrakeplugin.util.ComputedNavigableMap;
+import com.waterloorocketry.airbrakeplugin.util.LazyNavigableMap;
 
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -25,7 +25,8 @@ public class SimulatedCdInterpolator implements Interpolator<SimulatedCdInterpol
 
     @Override
     public double compute(Data data) {
-        NavigableMap<Double, Double> mapExtToInterpolant = new ComputedNavigableMap<>(fs, (f) -> f.compute(data.velocity));
+        // The quadratic functions are only evaluated when necessarily, since this map computes values lazily
+        NavigableMap<Double, Double> mapExtToInterpolant = new LazyNavigableMap<>(fs, (f) -> f.compute(data.velocity));
         LinearInterpolator interp = new LinearInterpolator(mapExtToInterpolant);
         return interp.compute(data.extension);
     }

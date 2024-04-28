@@ -14,11 +14,11 @@ import java.util.function.Function;
  * @param <V> Value type of the inner map, input type of the computation
  * @param <R> Return type of the computation
  */
-public class ComputedMap<K, V, R> implements Map<K, R> {
+public class LazyMap<K, V, R> implements Map<K, R> {
     private final Map<K, V> map;
     private final Function<V, R> compute;
 
-    public ComputedMap(Map<K, V> map, Function<V, R> compute) {
+    public LazyMap(Map<K, V> map, Function<V, R> compute) {
         this.map = map;
         this.compute = compute;
     }

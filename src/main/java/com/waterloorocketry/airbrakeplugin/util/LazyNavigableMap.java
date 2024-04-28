@@ -5,10 +5,13 @@ import java.util.NavigableSet;
 import java.util.function.Function;
 
 /**
- * A {@link ComputedSortedMap} which is also a {@link NavigableMap}
+ * A {@link LazySortedMap} which is also a {@link NavigableMap}.
+ * This map wraps an inner map from {@param <K>} to {@param <V>} and
+ * a computation function from {@param <V>} to {@param <R>}, acting as
+ * a map from {@param <K>} to {@param <R>} by computing values lazily.
  */
-public class ComputedNavigableMap<K, V, R> extends ComputedSortedMap<K, V, R> implements NavigableMap<K, R> {
-    public ComputedNavigableMap(NavigableMap<K, V> map, Function<V, R> compute) {
+public class LazyNavigableMap<K, V, R> extends LazySortedMap<K, V, R> implements NavigableMap<K, R> {
+    public LazyNavigableMap(NavigableMap<K, V> map, Function<V, R> compute) {
         super(map, compute);
     }
 
@@ -79,7 +82,7 @@ public class ComputedNavigableMap<K, V, R> extends ComputedSortedMap<K, V, R> im
 
     @Override
     public NavigableMap<K, R> descendingMap() {
-        return new ComputedNavigableMap<>(getMap().descendingMap(), getCompute());
+        return new LazyNavigableMap<>(getMap().descendingMap(), getCompute());
     }
 
     @Override
@@ -96,16 +99,16 @@ public class ComputedNavigableMap<K, V, R> extends ComputedSortedMap<K, V, R> im
 
     @Override
     public NavigableMap<K, R> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
-        return new ComputedNavigableMap<>(getMap().subMap(fromKey, fromInclusive, toKey, toInclusive), getCompute());
+        return new LazyNavigableMap<>(getMap().subMap(fromKey, fromInclusive, toKey, toInclusive), getCompute());
     }
 
     @Override
     public NavigableMap<K, R> headMap(K toKey, boolean inclusive) {
-        return new ComputedNavigableMap<>(getMap().headMap(toKey, inclusive), getCompute());
+        return new LazyNavigableMap<>(getMap().headMap(toKey, inclusive), getCompute());
     }
 
     @Override
     public NavigableMap<K, R> tailMap(K fromKey, boolean inclusive) {
-        return new ComputedNavigableMap<>(getMap().headMap(fromKey, inclusive), getCompute());
+        return new LazyNavigableMap<>(getMap().headMap(fromKey, inclusive), getCompute());
     }
 }

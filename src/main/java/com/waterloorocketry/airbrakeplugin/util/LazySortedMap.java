@@ -5,10 +5,13 @@ import java.util.SortedMap;
 import java.util.function.Function;
 
 /**
- * A {@link ComputedMap} which is also a {@link SortedMap}
+ * A {@link LazyMap} which is also a {@link SortedMap}.
+ * This map wraps an inner map from {@param <K>} to {@param <V>} and
+ * a computation function from {@param <V>} to {@param <R>}, acting as
+ * a map from {@param <K>} to {@param <R>} by computing values lazily.
  */
-public class ComputedSortedMap<K, V, R> extends ComputedMap<K, V, R> implements SortedMap<K, R> {
-    public ComputedSortedMap(SortedMap<K, V> map, Function<V, R> compute) {
+public class LazySortedMap<K, V, R> extends LazyMap<K, V, R> implements SortedMap<K, R> {
+    public LazySortedMap(SortedMap<K, V> map, Function<V, R> compute) {
         super(map, compute);
     }
 
@@ -24,17 +27,17 @@ public class ComputedSortedMap<K, V, R> extends ComputedMap<K, V, R> implements 
 
     @Override
     public SortedMap<K, R> subMap(K fromKey, K toKey) {
-        return new ComputedSortedMap<>(getMap().subMap(fromKey, toKey), getCompute());
+        return new LazySortedMap<>(getMap().subMap(fromKey, toKey), getCompute());
     }
 
     @Override
     public SortedMap<K, R> headMap(K toKey) {
-        return new ComputedSortedMap<>(getMap().headMap(toKey), getCompute());
+        return new LazySortedMap<>(getMap().headMap(toKey), getCompute());
     }
 
     @Override
     public SortedMap<K, R> tailMap(K fromKey) {
-        return new ComputedSortedMap<>(getMap().tailMap(fromKey), getCompute());
+        return new LazySortedMap<>(getMap().tailMap(fromKey), getCompute());
     }
 
     @Override
