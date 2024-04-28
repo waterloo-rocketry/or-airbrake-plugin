@@ -87,14 +87,12 @@ public class LazyNavigableMap<K, V, R> extends LazySortedMap<K, V, R> implements
 
     @Override
     public NavigableSet<K> navigableKeySet() {
-        // TODO
-        throw new RuntimeException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
     public NavigableSet<K> descendingKeySet() {
-        // TODO
-        throw new RuntimeException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override

@@ -108,13 +108,11 @@ public class LazyMap<K, V, R> implements Map<K, R> {
 
     @Override
     public Collection<R> values() {
-        // TODO
-        throw new RuntimeException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
     public Set<Entry<K, R>> entrySet() {
-        // TODO
-        throw new RuntimeException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 }
