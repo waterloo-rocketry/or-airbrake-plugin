@@ -45,8 +45,8 @@ public class TrajectoryPrediction {
         double kv4 = h * velocity_derivative(force + h*kv3, mass);
 
         RK4Integrals updatedIntegrals = new RK4Integrals();
-        updatedIntegrals.vel = (integrals.vel + (ka1 + 2*ka2 + 2*ka3 + ka4)/6);
-        updatedIntegrals.alt = (integrals.alt + (kv1 + 2*kv2 + 2*kv3 + kv4)/6);
+        updatedIntegrals.alt = (integrals.alt + (ka1 + 2*ka2 + 2*ka3 + ka4)/6);
+        updatedIntegrals.vel = (integrals.vel + (kv1 + 2*kv2 + 2*kv3 + kv4)/6);
 
         return updatedIntegrals;
     }
@@ -56,7 +56,7 @@ public class TrajectoryPrediction {
      * @return acceleration due to gravity (m/s^2)
      */
     private static double gravitational_acceleration(double altitude) {
-        return GRAV_AT_SEA_LVL * Math.pow(EARTH_MEAN_RADIUS / ( EARTH_MEAN_RADIUS + altitude), 2);
+        return -1*GRAV_AT_SEA_LVL * Math.pow(EARTH_MEAN_RADIUS / ( EARTH_MEAN_RADIUS + altitude), 2);
     }
 
     /**
@@ -184,7 +184,7 @@ public class TrajectoryPrediction {
             // System.out.println("pred alt: " + states.alt + "m");
         }
 
-        return altitude;
+        return states.alt;
     }
 }
 
