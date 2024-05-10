@@ -30,18 +30,19 @@ public class TrajectoryPrediction {
      * @param mass of rocket (kg)
      * @param integrals, altitude (m) and velocity (m/s)
      * @return updated altitude and velocity integrals after one rk4 step
+     * ka is for altitude and kv is for velocity
      */
     private static RK4Integrals rk4(double h, double force, double mass, RK4Integrals integrals) {
-        double ka1 = h * integrals.alt;
+        double ka1 = h * integrals.vel;
         double kv1 = h * velocity_derivative(force, mass);
 
-        double ka2 = h * (integrals.alt + h*ka1/2);
+        double ka2 = h * (integrals.vel + h*ka1/2);
         double kv2 = h * velocity_derivative(force + h*kv1/2, mass);
 
-        double ka3 = h * (integrals.alt + h*ka2/2);
+        double ka3 = h * (integrals.vel + h*ka2/2);
         double kv3 = h * velocity_derivative(force + h*kv2/2, mass);
 
-        double ka4 = h * (integrals.alt + h*ka3);
+        double ka4 = h * (integrals.vel + h*ka3);
         double kv4 = h * velocity_derivative(force + h*kv3, mass);
 
         RK4Integrals updatedIntegrals = new RK4Integrals();
@@ -56,7 +57,7 @@ public class TrajectoryPrediction {
      * @return acceleration due to gravity (m/s^2)
      */
     private static double gravitational_acceleration(double altitude) {
-        return -1*GRAV_AT_SEA_LVL * Math.pow(EARTH_MEAN_RADIUS / ( EARTH_MEAN_RADIUS + altitude), 2);
+        return GRAV_AT_SEA_LVL * Math.pow(EARTH_MEAN_RADIUS / ( EARTH_MEAN_RADIUS + altitude), 2);
     }
 
     /**
