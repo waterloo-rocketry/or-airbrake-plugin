@@ -31,15 +31,14 @@ public class PIDController implements Controller {
     public double calculateTargetExt(RocketState rocketState, double time, double extension) {
         double altitude = TrajectoryPrediction.get_max_altitude(rocketState.velocityZ, rocketState.positionZ, extension, ROCKET_BURNOUT_MASS); //z displacement, z velocity, ...; +Z is "up" in OR
         double error = targetAltitude - altitude;
+        double derivative = 0.0;
         if (lastState != null) {
             integral += (time - lastState.time) * (error + lastState.error) * 0.5;
+            derivative = (error - lastState.error) / (time - lastState.time);
         }
         lastState = new LastState(altitude, time);
 
-        double derivative = -rocketState.velocityY;
-
-        // PLACEHOLDER CODE TO RETURN A VALID DOUBLE. not actual pid
-        double output = Kp + Ki + Kd;
+        double output = Kp * error + Ki * integral + Kd * derivative;
 
         System.out.println("extension " + output);
 
