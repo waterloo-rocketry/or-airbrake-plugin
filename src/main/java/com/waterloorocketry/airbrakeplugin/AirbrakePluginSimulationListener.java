@@ -99,6 +99,9 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 			double refArea = flightConditions.getRefArea();
 			double cDAxial = dragForce / dynP / refArea;
 
+			// Note: this calculation isn't actually CDAxial, but it's necessary to override CDAxial
+			// since OR uses CDAxial for its proceeding calculations. Experiments showed the diff between our
+			// "CDAxial" and actual CDAxial (which accounts for AOA) is insignificant so this is fine.
 			forces.setCDaxial(cDAxial);
 		}
 
