@@ -2,10 +2,12 @@ package com.waterloorocketry.airbrakeplugin;
 
 import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
-import com.waterloorocketry.airbrakeplugin.controller.TrajectoryPrediction;
-
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
-import net.sf.openrocket.simulation.*;
+import net.sf.openrocket.aerodynamics.FlightConditions;
+import net.sf.openrocket.simulation.FlightDataBranch;
+import net.sf.openrocket.simulation.FlightDataType;
+import net.sf.openrocket.simulation.FlightEvent;
+import net.sf.openrocket.simulation.SimulationStatus;
 import net.sf.openrocket.simulation.exception.SimulationException;
 import net.sf.openrocket.simulation.listeners.AbstractSimulationListener;
 import net.sf.openrocket.unit.UnitGroup;
@@ -63,23 +65,45 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 	}
 
 	/**
+	 * Flight conditions for the current timestep.
+	 */
+	private FlightConditions flightConditions = null;
+
+	// We can't look at status.getFlightData() for anything except extension instead because it would
+	// apply to the last timestep
+	@Override
+	public FlightConditions postFlightConditions(SimulationStatus status, FlightConditions flightConditions) throws SimulationException {
+		this.flightConditions = flightConditions;
+		return flightConditions;
+	}
+
+	/**
 	 * Overrides the coefficient of drag after the aerodynamic calculations are done each timestep.
 	 */
 	@Override
 	public AerodynamicForces postAerodynamicCalculation(SimulationStatus status, AerodynamicForces forces) throws SimulationException {
-		// Get latest flight conditions and airbrake extension
-		FlightDataBranch flightData = status.getFlightData();
-
-		final double altitude = flightData.getLast(FlightDataType.TYPE_ALTITUDE);
-		final double velocity = flightData.getLast(FlightDataType.TYPE_VELOCITY_Z);
-		final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
+		final double velocityZ = status.getRocketVelocity().z;
 		
 		// Override CD only during coast, and until velocity is too small for the drag tabulation to be accurate
-		if (burnout && !status.isApogeeReached() && velocity > 23.5) {
-			double calculatedCd = TrajectoryPrediction.interpolate_cd(airbrakeExt, velocity, altitude);
-			forces.setCDaxial(calculatedCd);
+		if (burnout && !status.isApogeeReached() && velocityZ > 23.5) {
+			// Get latest flight conditions and airbrake extension
+			FlightDataBranch flightData = status.getFlightData();
+			final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
+
+			final double altitude = status.getRocketPosition().z;
+
+			double dragForce = airbrakes.calculateDragForce(airbrakeExt, velocityZ, altitude);
+
+			double velocity2 = status.getRocketVelocity().length2();
+			double dynP = (0.5 * flightConditions.getAtmosphericConditions().getDensity() * velocity2);
+			double refArea = flightConditions.getRefArea();
+			double cDAxial = dragForce / dynP / refArea;
+
+			// Note: this calculation isn't actually CDAxial, but it's necessary to override CDAxial
+			// since OR uses CDAxial for its proceeding calculations. Experiments showed the diff between our
+			// "CDAxial" and actual CDAxial (which accounts for AOA) is insignificant so this is fine.
+			forces.setCDaxial(cDAxial);
 		}
-		System.out.println("cd " + forces.getCD());
 
 		return forces;
 	}
