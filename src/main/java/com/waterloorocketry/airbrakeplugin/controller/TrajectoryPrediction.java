@@ -44,7 +44,7 @@ public class TrajectoryPrediction {
      */
     static Forces get_forces(double extension, double mass, double velX, double velY, double alt){
         Forces forces = new Forces();
-        double angle = Math.atan(velY / velX);
+        double angle = Math.atan(velX / velY);
         double Fd = -interp.compute(new SimulatedDragForceInterpolator.Data(extension, Math.sqrt(velY*velY + velX*velX), alt)); // force of drag (N)
         double Fg = -gravitational_acceleration(alt) * mass; // force of gravity (N)
         forces.Fy = Fd * Math.cos(angle) + Fg;
