@@ -1,5 +1,7 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
+import com.oracle.truffle.js.builtins.math.MathBuiltins;
+
 public class PIDController implements Controller {
     private static final double ROCKET_BURNOUT_MASS = 39.564; //kg
     private final double Kp;
@@ -29,7 +31,8 @@ public class PIDController implements Controller {
 
     @Override
     public double calculateTargetExt(RocketState rocketState, double time, double extension) {
-        double altitude = TrajectoryPrediction.get_max_altitude(rocketState.velocityZ, rocketState.positionZ, extension, ROCKET_BURNOUT_MASS); //z displacement, z velocity, ...; +Z is "up" in OR
+        double vX = Math.sqrt(rocketState.velocityX * rocketState.velocityX + rocketState.velocityY * rocketState.velocityY);
+        double altitude = TrajectoryPrediction.get_max_altitude(rocketState.velocityZ, vX, rocketState.positionZ, extension, ROCKET_BURNOUT_MASS); //z displacement, z velocity, ...; +Z is "up" in OR
         double error = targetAltitude - altitude;
         double derivative = 0.0;
         if (lastState != null) {
