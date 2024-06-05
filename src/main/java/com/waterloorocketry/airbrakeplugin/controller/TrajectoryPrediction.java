@@ -17,13 +17,13 @@ public class TrajectoryPrediction {
 
     private static class RK4State {
         public double velX;
-        public double velY;
+        public double velZ;
         public double alt;
     }
 
     private static class Forces {
         public double Fx;
-        public double Fy;
+        public double Fz;
     }
 
 
@@ -35,27 +35,27 @@ public class TrajectoryPrediction {
     }
 
     /**
-     * @param extension extension of airbrakes, 0-1
+     * @param extension of airbrakes, 0-1
      * @param mass of rocket (kg)
      * @param velX, velocity in X direction (m/s)
-     * @param velY, velocity in Y direction (m/s)
+     * @param velZ, velocity in Y direction (m/s)
      * @param alt, altitude (m)
      * @return forces acting on rocket in the X and Y directions (N)
      */
-    static Forces get_forces(double extension, double mass, double velX, double velY, double alt){
+    static Forces get_forces(double extension, double mass, double velX, double velZ, double alt){
         Forces forces = new Forces();
-        double angle = Math.atan(velX / velY);
-        double Fd = -interp.compute(new SimulatedDragForceInterpolator.Data(extension, Math.sqrt(velY*velY + velX*velX), alt)); // force of drag (N)
+        double velT = Math.sqrt(velZ*velZ + velX*velX);
+        double Fd = -interp.compute(new SimulatedDragForceInterpolator.Data(extension, velT, alt)); // force of drag (N)
         double Fg = -gravitational_acceleration(alt) * mass; // force of gravity (N)
-        forces.Fy = Fd * Math.cos(angle) + Fg;
-        forces.Fx = Fd * Math.sin(angle);
+        forces.Fz = Fd * (velZ/velT) + Fg;
+        forces.Fx = Fd * (velX/velT);
         return forces;
     }
 
     /**
      * rk4 method to integrate altitude from velocity, and integrate velocity from acceleration (force/mass)
      * @param h time step
-     * @param extension extension of airbrakes, 0-1
+     * @param extension of airbrakes, 0-1
      * @param mass of rocket (kg)
      * @param state, including altitude (m) and velocity in X and Y directions (m/s)
      * @return updated altitude and velocity integrals after one rk4 step
@@ -63,29 +63,29 @@ public class TrajectoryPrediction {
     static RK4State rk4(double h, double mass, double extension, RK4State state) {
         Forces forces;
 
-        forces = get_forces(extension, mass, state.velX, state.velY, state.alt);
-        double ka1 = h * state.velY;
-        double kvY1 = h * acceleration(forces.Fy, mass);
+        forces = get_forces(extension, mass, state.velX, state.velZ, state.alt);
+        double ka1 = h * state.velZ;
+        double kvZ1 = h * acceleration(forces.Fz, mass);
         double kvX1 = h * acceleration(forces.Fx, mass);
 
-        forces = get_forces(extension, mass, state.velX + kvX1/2, state.velY + kvY1/2, state.alt + ka1/2);
-        double ka2 = h * (state.velY + h*kvY1/2);
-        double kvY2 = h * acceleration(forces.Fy, mass);
+        forces = get_forces(extension, mass, state.velX + kvX1/2, state.velZ + kvZ1/2, state.alt + ka1/2);
+        double ka2 = h * (state.velZ + h*kvZ1/2);
+        double kvZ2 = h * acceleration(forces.Fz, mass);
         double kvX2 = h * acceleration(forces.Fx, mass);
 
-        forces = get_forces(extension, mass, state.velX + kvX2/2, state.velY + kvY2/2, state.alt + ka2/2);
-        double ka3 = h * (state.velY + h*kvY2/2);
-        double kvY3 = h * acceleration(forces.Fy, mass);
+        forces = get_forces(extension, mass, state.velX + kvX2/2, state.velZ + kvZ2/2, state.alt + ka2/2);
+        double ka3 = h * (state.velZ + h*kvZ2/2);
+        double kvZ3 = h * acceleration(forces.Fz, mass);
         double kvX3 = h * acceleration(forces.Fx, mass);
 
-        forces = get_forces(extension, mass, state.velX + kvX3, state.velY + kvY3, state.alt + ka3);
-        double ka4 = h * (state.velY + h*kvY3);
-        double kvY4 = h * acceleration(forces.Fy, mass);
+        forces = get_forces(extension, mass, state.velX + kvX3, state.velZ + kvZ3, state.alt + ka3);
+        double ka4 = h * (state.velZ + h*kvZ3);
+        double kvZ4 = h * acceleration(forces.Fz, mass);
         double kvX4 = h * acceleration(forces.Fx, mass);
 
         RK4State updatedState= new RK4State();
         updatedState.alt = (state.alt + (ka1 + 2*ka2 + 2*ka3 + ka4)/6);
-        updatedState.velY = (state.velY + (kvY1 + 2*kvY2 + 2*kvY3 + kvY4)/6);
+        updatedState.velZ = (state.velZ + (kvZ1 + 2*kvZ2 + 2*kvZ3 + kvZ4)/6);
         updatedState.velX = (state.velX + (kvX1 + 2*kvX2 + 2*kvX3 + kvX4)/6);
 
         return updatedState;
@@ -101,7 +101,7 @@ public class TrajectoryPrediction {
 
     /**
      * Does not take into account fins
-     * @param extension extension of the airbrakes (0-1)
+     * @param extension of the airbrakes (0-1)
      * @return rocket's cross-sectional area from airbrake extension
      */
     private static double rocket_area(double extension) {
@@ -131,13 +131,10 @@ public class TrajectoryPrediction {
 
         RK4State states = new RK4State();
         states.alt = altitude;
-        states.velY = velocityY;
+        states.velZ = velocityY;
         states.velX = velocityX;
 
         while (states.alt >= prevAlt) {
-            // update forces of drag and gravity from new altitude
-            //double Fg = -gravitational_acceleration(states.alt) * mass; // force of gravity (N)
-            //double Fd = -interp.compute(new SimulatedDragForceInterpolator.Data(airbrake_ext, states.vel, states.alt)); // force of drag (N)
 
             // to check if altitude is decreasing to exit the loop
             prevAlt = states.alt;
