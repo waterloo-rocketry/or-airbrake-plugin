@@ -15,45 +15,80 @@ public class TrajectoryPrediction {
 
     private static final SimulatedDragForceInterpolator interp = new SimulatedDragForceInterpolator();
 
-    private static class RK4Integrals {
-        public double vel;
+    private static class RK4State {
+        public double velX;
+        public double velZ;
         public double alt;
     }
+
+    private static class Forces {
+        public double Fx;
+        public double Fz;
+    }
+
 
     /**
      *  @return acceleration (m/s^2)
      */
-    private static double velocity_derivative(double force, double mass) {
+    private static double acceleration(double force, double mass) {
         return force/mass;
+    }
+
+    /**
+     * @param extension of airbrakes, 0-1
+     * @param mass of rocket (kg)
+     * @param velX, velocity in X direction (m/s)
+     * @param velZ, velocity in Y direction (m/s)
+     * @param alt, altitude (m)
+     * @return forces acting on rocket in the X and Y directions (N)
+     */
+    static Forces get_forces(double extension, double mass, double velX, double velZ, double alt){
+        Forces forces = new Forces();
+        double velT = Math.sqrt(velZ*velZ + velX*velX);
+        double Fd = -interp.compute(new SimulatedDragForceInterpolator.Data(extension, velT, alt)); // force of drag (N)
+        double Fg = -gravitational_acceleration(alt) * mass; // force of gravity (N)
+        forces.Fz = Fd * (velZ/velT) + Fg;
+        forces.Fx = Fd * (velX/velT);
+        return forces;
     }
 
     /**
      * rk4 method to integrate altitude from velocity, and integrate velocity from acceleration (force/mass)
      * @param h time step
-     * @param force sum of forces acting on rocket at given time (N)
+     * @param extension of airbrakes, 0-1
      * @param mass of rocket (kg)
-     * @param integrals, altitude (m) and velocity (m/s)
+     * @param state, including altitude (m) and velocity in X and Y directions (m/s)
      * @return updated altitude and velocity integrals after one rk4 step
-     * ka is for altitude and kv is for velocity
      */
-    private static RK4Integrals rk4(double h, double force, double mass, RK4Integrals integrals) {
-        double ka1 = h * integrals.vel;
-        double kv1 = h * velocity_derivative(force, mass);
+    static RK4State rk4(double h, double mass, double extension, RK4State state) {
+        Forces forces;
 
-        double ka2 = h * (integrals.vel + h*ka1/2);
-        double kv2 = h * velocity_derivative(force + h*kv1/2, mass);
+        forces = get_forces(extension, mass, state.velX, state.velZ, state.alt);
+        double ka1 = h * state.velZ;
+        double kvZ1 = h * acceleration(forces.Fz, mass);
+        double kvX1 = h * acceleration(forces.Fx, mass);
 
-        double ka3 = h * (integrals.vel + h*ka2/2);
-        double kv3 = h * velocity_derivative(force + h*kv2/2, mass);
+        forces = get_forces(extension, mass, state.velX + kvX1/2, state.velZ + kvZ1/2, state.alt + ka1/2);
+        double ka2 = h * (state.velZ + h*kvZ1/2);
+        double kvZ2 = h * acceleration(forces.Fz, mass);
+        double kvX2 = h * acceleration(forces.Fx, mass);
 
-        double ka4 = h * (integrals.vel + h*ka3);
-        double kv4 = h * velocity_derivative(force + h*kv3, mass);
+        forces = get_forces(extension, mass, state.velX + kvX2/2, state.velZ + kvZ2/2, state.alt + ka2/2);
+        double ka3 = h * (state.velZ + h*kvZ2/2);
+        double kvZ3 = h * acceleration(forces.Fz, mass);
+        double kvX3 = h * acceleration(forces.Fx, mass);
 
-        RK4Integrals updatedIntegrals = new RK4Integrals();
-        updatedIntegrals.alt = (integrals.alt + (ka1 + 2*ka2 + 2*ka3 + ka4)/6);
-        updatedIntegrals.vel = (integrals.vel + (kv1 + 2*kv2 + 2*kv3 + kv4)/6);
+        forces = get_forces(extension, mass, state.velX + kvX3, state.velZ + kvZ3, state.alt + ka3);
+        double ka4 = h * (state.velZ + h*kvZ3);
+        double kvZ4 = h * acceleration(forces.Fz, mass);
+        double kvX4 = h * acceleration(forces.Fx, mass);
 
-        return updatedIntegrals;
+        RK4State updatedState= new RK4State();
+        updatedState.alt = (state.alt + (ka1 + 2*ka2 + 2*ka3 + ka4)/6);
+        updatedState.velZ = (state.velZ + (kvZ1 + 2*kvZ2 + 2*kvZ3 + kvZ4)/6);
+        updatedState.velX = (state.velX + (kvX1 + 2*kvX2 + 2*kvX3 + kvX4)/6);
+
+        return updatedState;
     }
 
     /**
@@ -66,7 +101,7 @@ public class TrajectoryPrediction {
 
     /**
      * Does not take into account fins
-     * @param extension extension of the airbrakes (0-1)
+     * @param extension of the airbrakes (0-1)
      * @return rocket's cross-sectional area from airbrake extension
      */
     private static double rocket_area(double extension) {
@@ -84,29 +119,28 @@ public class TrajectoryPrediction {
     }
 
     /** @return max apogee
-     * @param velocity vertical velocity (m/s)
+     * @param velocityY vertical velocity (m/s)
+     * @param velocityX horizontal velocity (m/s)
      * @param altitude (m)
      * @param airbrake_ext extension of airbrakes, 0-1
      * @param mass (kg)*/
-    public static double get_max_altitude(double velocity, double altitude, double airbrake_ext, double mass) {
+    public static double get_max_altitude(double velocityY, double velocityX, double altitude, double airbrake_ext, double mass) {
 
         double h = 0.05; // interval of change for rk4
         double prevAlt = 0.0; // variable to store previous altitude
 
-        RK4Integrals states = new RK4Integrals();
+        RK4State states = new RK4State();
         states.alt = altitude;
-        states.vel = velocity;
+        states.velZ = velocityY;
+        states.velX = velocityX;
 
         while (states.alt >= prevAlt) {
-            // update forces of drag and gravity from new altitude
-            double Fg = -gravitational_acceleration(states.alt) * mass; // force of gravity (N)
-            double Fd = -interp.compute(new SimulatedDragForceInterpolator.Data(airbrake_ext, states.vel, states.alt)); // force of drag (N)
 
             // to check if altitude is decreasing to exit the loop
             prevAlt = states.alt;
 
             // update velocity and altitude
-            states = rk4(h, Fg+Fd, mass, states);
+            states = rk4(h, mass, airbrake_ext, states);
 
             // System.out.println("pred alt: " + states.alt + "m");
         }
