@@ -28,3 +28,9 @@ tasks.register('run', JavaExec) {
     mainClass = 'net.sf.openrocket.startup.OpenRocket'
     classpath = files('./OpenRocket-23.09.jar', tasks.jar)
 }
+
+tasks.register('tune', JavaExec) {
+    dependsOn jar
+    mainClass = 'com.waterloorocketry.airbrakeplugin.PidTuner'
+    classpath = files('./OpenRocket-23.09.jar', tasks.jar)
+}
