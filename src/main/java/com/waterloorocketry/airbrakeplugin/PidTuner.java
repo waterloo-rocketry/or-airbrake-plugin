@@ -18,6 +18,7 @@ import net.sf.openrocket.plugin.PluginModule;
 import net.sf.openrocket.simulation.FlightDataType;
 import net.sf.openrocket.simulation.FlightEvent;
 import net.sf.openrocket.simulation.SimulationConditions;
+import net.sf.openrocket.simulation.listeners.SimulationListener;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.startup.GuiModule;
 
@@ -48,20 +49,20 @@ public class PidTuner {
         OpenRocketDocument doc = loader.load();
 
         Simulation simulation = new Simulation(doc, doc.getRocket());
-        SimulationConditions conditions = new SimulationConditions();
+
         Controller controller = new PIDController(10000, 0.0, 0.0, 0.0);
         Airbrakes airbrakes = new SimulatedAirbrakes();
-        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller));
-        simulation.simulate();
+        SimulationListener listener = new AirbrakePluginSimulationListener(airbrakes, controller);
+
+        simulation.simulate(listener);
         System.out.println("max altitude: " + simulation.getSimulatedData().getMaxAltitude());
 
         PlotConfiguration config = new PlotConfiguration("PID");
 
-        config.addPlotDataType(FlightDataType.TYPE_ALTITUDE, 0);
-        config.addPlotDataType(FlightDataType.TYPE_VELOCITY_Z);
-        config.addPlotDataType(FlightDataType.TYPE_ACCELERATION_Z);
-        // not working right now
-//        config.addPlotDataType(AirbrakePluginSimulationListener.airbrakeExtDataType);
+//        config.addPlotDataType(FlightDataType.TYPE_ALTITUDE, 0);
+//        config.addPlotDataType(FlightDataType.TYPE_VELOCITY_Z);
+//        config.addPlotDataType(FlightDataType.TYPE_ACCELERATION_Z);
+        config.addPlotDataType(AirbrakePluginSimulationListener.airbrakeExtDataType);
         config.setEvent(FlightEvent.Type.IGNITION, true);
         config.setEvent(FlightEvent.Type.BURNOUT, true);
         config.setEvent(FlightEvent.Type.APOGEE, true);
