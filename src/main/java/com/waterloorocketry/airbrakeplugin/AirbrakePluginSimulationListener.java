@@ -39,18 +39,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
 
 		// Only run controller during coast phase. If not in coast, still set ext to 0 (better than NaN)
 		if (burnout && !status.isApogeeReached()) {
-			Controller.RocketState data = new Controller.RocketState();
-
-			data.positionX = status.getRocketPosition().x;
-			data.positionY = status.getRocketPosition().y;
-			data.positionZ = status.getRocketPosition().z;
-			data.velocityX = status.getRocketVelocity().x;
-			data.velocityY = status.getRocketVelocity().y;
-			data.velocityZ = status.getRocketVelocity().z;
-			data.orientationX = status.getRocketOrientationQuaternion().getX();
-			data.orientationY = status.getRocketOrientationQuaternion().getY();
-			data.orientationZ = status.getRocketOrientationQuaternion().getZ();
-			data.orientationW = status.getRocketOrientationQuaternion().getW();
+			Controller.RocketState data = new Controller.RocketState(status);
 
 			ext = controller.calculateTargetExt(data, status.getSimulationTime(), ext);
 			if (!(0.0 <= ext && ext <= 1.0)) {
