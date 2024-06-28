@@ -77,7 +77,11 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         if (burnout && !status.isApogeeReached() && velocityZ > 23.5) {
             // Get latest flight conditions and airbrake extension
             FlightDataBranch flightData = status.getFlightData();
-            final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
+            final double airbrakeExt = airbrakes.getAppliedAirbrakesExtension(
+                    flightData.get(FlightDataType.TYPE_TIME),
+                    flightData.get(airbrakeExtDataType),
+                    status.getSimulationTime()
+            );
 
             final double altitude = status.getRocketPosition().z;
 
