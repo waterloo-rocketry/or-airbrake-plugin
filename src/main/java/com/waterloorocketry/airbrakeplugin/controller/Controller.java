@@ -1,5 +1,7 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
+import net.sf.openrocket.simulation.SimulationStatus;
+
 /**
  * Control airbrake extension during simulation
  */
@@ -27,5 +29,22 @@ public interface Controller {
         public double orientationY;
         public double orientationZ;
         public double orientationW;
+
+        /**
+         * Constructs the rocket state from OpenRocket
+         * @param status OpenRocket simulation status
+         */
+        public RocketState(SimulationStatus status) {
+            this.positionX = status.getRocketPosition().x;
+            this.positionY = status.getRocketPosition().y;
+            this.positionZ = status.getRocketPosition().z;
+            this.velocityX = status.getRocketVelocity().x;
+            this.velocityY = status.getRocketVelocity().y;
+            this.velocityZ = status.getRocketVelocity().z;
+            this.orientationX = status.getRocketOrientationQuaternion().getX();
+            this.orientationY = status.getRocketOrientationQuaternion().getY();
+            this.orientationZ = status.getRocketOrientationQuaternion().getZ();
+            this.orientationW = status.getRocketOrientationQuaternion().getW();
+        }
     }
 }
