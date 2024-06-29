@@ -23,8 +23,44 @@ test {
     useJUnitPlatform()
 }
 
+// template from: https://github.com/stwind/gradle-jni
+
+sourceSets {
+    main {
+        resources {
+            srcDirs 'build/natives/bin'
+        }
+    }
+}
+
+compileJava {
+    options.compilerArgs += ['-h', file('src/main/include')]
+}
+
+task compileJNI {
+    dependsOn compileJava
+
+    doLast {
+        exec {
+            mkdir 'build/natives'
+            commandLine 'sh', 'build.sh'
+        }
+    }
+}
+
+clean.doFirst {
+    delete fileTree('src/main/include') {
+        include 'jni_*.h'
+    }
+}
+
+processResources {
+    dependsOn compileJNI
+}
+
 tasks.register('run', JavaExec) {
     dependsOn jar
     mainClass = 'net.sf.openrocket.startup.OpenRocket'
     classpath = files('./OpenRocket-23.09.jar', tasks.jar)
+    systemProperty 'java.library.path', 'build/natives/lib'
 }
