@@ -28,7 +28,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
     }
 
     private boolean burnout(SimulationStatus status) {
-        return status.getSimulationTime() > 7.69;
+        return status.getSimulationTime() > 9;
     }
 
     /**
