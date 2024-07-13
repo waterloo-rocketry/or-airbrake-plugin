@@ -2,6 +2,9 @@ package com.waterloorocketry.airbrakeplugin.simulated;
 
 import com.waterloorocketry.airbrakeplugin.util.LazyNavigableMap;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -30,28 +33,51 @@ public class SimulatedDragForceInterpolator implements Interpolator<SimulatedDra
         }
     }
 
-    private final NavigableMap<Double, QuadraticFunction> fs = new TreeMap<>();
-    /**
-     * The height about sea level that simulations were conducted at, in meters
-     */
-    private static final double SIM_ALTITUDE = 1000;
+    private final NavigableMap<Double, NavigableMap<Double, NavigableMap<Double, Double>>> points = new TreeMap<>();
 
     /**
      * Constructs a new `SimulatedDragForceInterpolator` with the simulated values
      */
     public SimulatedDragForceInterpolator() {
-        fs.put(0.0, new QuadraticFunction(0.0035, 0.1317, -5.0119));
-        fs.put(0.5, new QuadraticFunction(0.0045, 0.1031, -3.8231));
-        fs.put(1.0, new QuadraticFunction(0.006, 0.1038, -4.2522));
+        List<String> lines = new ArrayList<>();
+        try (FileReader f = new FileReader("./rockets/Final Simulation Result.csv")) {
+            try (BufferedReader r = new BufferedReader(f)) {
+                while (true) {
+                    String l = r.readLine();
+                    if (l != null) {
+                        lines.add(l);
+                    } else {
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read CSV simulation results", e);
+        }
+        lines = lines.subList(1, lines.size());
+        for (String line : lines) {
+            String[] values = line.split(",");
+            if (values.length != 5) {
+                throw new RuntimeException("expected 5 values");
+            }
+            double ext = Double.parseDouble(values[0]) / 100;
+            double alt = Double.parseDouble(values[1]);
+            double vel = Double.parseDouble(values[2]);
+            double drag = Double.parseDouble(values[3]);
+            points.computeIfAbsent(ext, (k) -> new TreeMap<>())
+                .computeIfAbsent(vel, (k) -> new TreeMap<>())
+                .put(alt, drag);
+        }
     }
 
     @Override
     public double compute(Data data) {
-        // The quadratic functions are only evaluated when necessarily, since this map computes values lazily
-        NavigableMap<Double, Double> mapExtToInterpolant = new LazyNavigableMap<>(fs, (f) -> f.compute(data.velocity));
-        LinearInterpolator interp = new LinearInterpolator(mapExtToInterpolant);
-        double dragAtSimAltitude = interp.compute(data.extension);
-        return dragAtSimAltitude / AirDensity.getAirDensityAtAltitude(SIM_ALTITUDE)
-                * AirDensity.getAirDensityAtAltitude(data.altitude);
+        // The functions are only evaluated when necessarily, since this map computes values lazily
+        NavigableMap<Double, Double> perExt = new LazyNavigableMap<>(points, (m) -> {
+            NavigableMap<Double, Double> perVel = new LazyNavigableMap<>(m,
+                    (n) -> new LinearInterpolator(n).compute(data.altitude));
+            return new LinearInterpolator(perVel).compute(data.velocity);
+        });
+        return new LinearInterpolator(perExt).compute(data.extension);
     }
 }

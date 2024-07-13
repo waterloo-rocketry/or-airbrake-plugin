@@ -74,7 +74,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         final double velocityZ = status.getRocketVelocity().z;
 
         // Override CD only during coast, and until velocity is too small for the drag tabulation to be accurate
-        if (burnout && !status.isApogeeReached() && velocityZ > 23.5) {
+        if (burnout && !status.isApogeeReached() && velocityZ > 34.0) {
             // Get latest flight conditions and airbrake extension
             FlightDataBranch flightData = status.getFlightData();
             final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
