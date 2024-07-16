@@ -7,11 +7,11 @@ import net.sf.openrocket.simulation.extension.AbstractSimulationExtensionProvide
 
 @Plugin
 public class AirbrakePluginProvider extends AbstractSimulationExtensionProvider {
-	/**
-	 * Lists the plugin in the simulation options.
-	 */
-	public AirbrakePluginProvider() {
-		super(AirbrakePlugin.class, "Waterloo Rocketry", "Airbrakes");
-	}
-	
+    /**
+     * Lists the plugin in the simulation options.
+     */
+    public AirbrakePluginProvider() {
+        super(AirbrakePlugin.class, "Waterloo Rocketry", "Airbrakes");
+    }
+
 }
