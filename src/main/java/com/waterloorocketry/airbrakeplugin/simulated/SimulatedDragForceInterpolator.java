@@ -70,9 +70,6 @@ public class SimulatedDragForceInterpolator implements Interpolator<SimulatedDra
             double y = (data.altitude - 5000) / 3172;
             return m.compute(new Cubic2VariableFunction.Coordinate(x, y));
         });
-        double ans = new LinearInterpolator(perExt).compute(data.extension);
-        System.out.println(data);
-        System.out.println("Drag: " + ans);
-        return ans;
+        return new LinearInterpolator(perExt).compute(data.extension);
     }
 }
