@@ -1,10 +1,6 @@
 package com.waterloorocketry.airbrakeplugin.simulated;
 
 public class Cubic2VariableFunction implements Interpolator<Cubic2VariableFunction.Coordinate> {
-    private final double meanX;
-    private final double stdX;
-    private final double meanY;
-    private final double stdY;
     private final double p00;
     private final double p10;
     private final double p01;
@@ -26,11 +22,7 @@ public class Cubic2VariableFunction implements Interpolator<Cubic2VariableFuncti
         }
     }
 
-    Cubic2VariableFunction(double meanX, double stdX, double meanY, double stdY, double p00, double p10, double p01, double p20, double p11, double p02, double p30, double p21, double p12, double p03) {
-        this.meanX = meanX;
-        this.stdX = stdX;
-        this.meanY = meanY;
-        this.stdY = stdY;
+    Cubic2VariableFunction(double p00, double p10, double p01, double p20, double p11, double p02, double p30, double p21, double p12, double p03) {
         this.p00 = p00;
         this.p10 = p10;
         this.p01 = p01;
@@ -45,8 +37,8 @@ public class Cubic2VariableFunction implements Interpolator<Cubic2VariableFuncti
 
     @Override
     public double compute(Coordinate coordinate) {
-        double x = (coordinate.x - meanX) / stdX;
-        double y = (coordinate.y - meanY) / stdY;
+        double x = coordinate.x;
+        double y = coordinate.y;
         return p00 + p10 * x + p01 * y + p20 * x * x + p11 * x * y + p02 * y * y + p30 * x * x * x + p21 * x * x * y + p12 * x * y * y + p03 * y * y * y;
     }
 }
