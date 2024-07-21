@@ -64,3 +64,9 @@ tasks.register('run', JavaExec) {
     classpath = files('./OpenRocket-23.09.jar', tasks.jar)
     systemProperty 'java.library.path', 'build/natives/lib'
 }
+
+tasks.register('tune', JavaExec) {
+    dependsOn jar
+    mainClass = 'com.waterloorocketry.airbrakeplugin.PidTuner'
+    classpath = files('./OpenRocket-23.09.jar', tasks.jar)
+}

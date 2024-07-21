@@ -19,13 +19,16 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
     private final Airbrakes airbrakes;
     private final Controller controller;
     private final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
-    private boolean burnout = false;
     private double ext = 0.0;
 
     public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller) {
         super();
         this.airbrakes = airbrakes;
         this.controller = controller;
+    }
+
+    private boolean burnout(SimulationStatus status) {
+        return status.getSimulationTime() > 9;
     }
 
     /**
@@ -38,7 +41,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         FlightDataBranch flightData = status.getFlightData();
 
         // Only run controller during coast phase. If not in coast, still set ext to 0 (better than NaN)
-        if (burnout && !status.isApogeeReached()) {
+        if (burnout(status) && !status.isApogeeReached()) {
             Controller.RocketState data = new Controller.RocketState(status);
 
             ext = controller.calculateTargetExt(data, status.getSimulationTime(), ext);
@@ -74,7 +77,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         final double velocityZ = status.getRocketVelocity().z;
 
         // Override CD only during coast, and until velocity is too small for the drag tabulation to be accurate
-        if (burnout && !status.isApogeeReached() && velocityZ > 23.5) {
+        if (burnout(status) && !status.isApogeeReached() && velocityZ > 34.0) {
             // Get latest flight conditions and airbrake extension
             FlightDataBranch flightData = status.getFlightData();
             final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
@@ -95,20 +98,5 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         }
 
         return forces;
-    }
-
-    // TODO: do burnout in a nicer way than practically being global var?
-    /**
-     * Called when motor burnout occurs. This is handled as an event.
-     * @param status
-     * @param event
-     * @return
-     */
-    @Override
-    public boolean handleFlightEvent(SimulationStatus status, FlightEvent event) {
-        if (event.getType() == FlightEvent.Type.BURNOUT) {
-            burnout = true;
-        }
-        return true;
     }
 }
