@@ -49,6 +49,9 @@ public class SimulatedDragForceInterpolator implements Interpolator<SimulatedDra
      * Constructs a new `SimulatedDragForceInterpolator` with the simulated values
      */
     public SimulatedDragForceInterpolator() {
+        // For each extension value, we have a cubic 2-variable polynomial with x as velocity and y as altitude
+        // We calculate the drag for velocity and altitude at each extension, then we do linear interpolation
+        // to account for the extension value.
         points.put(0.0, new Cubic2VariableFunction(232.2951, 244.7010, -75.1435, 64.3402, -79.5220, 11.7309, -0.8306, -20.4344, 9.7041, -0.6148));
         points.put(0.1, new Cubic2VariableFunction(235.8993, 249.2100, -76.2767, 65.8251, -81.2931, 12.0289, -0.8408, -21.0236, 9.9787, -0.7853));
         points.put(0.2, new Cubic2VariableFunction(245.6886, 260.2967, -80.2111, 69.3746, -85.4361, 12.5705, -0.6199, -22.1676, 10.4297, -0.6666));
