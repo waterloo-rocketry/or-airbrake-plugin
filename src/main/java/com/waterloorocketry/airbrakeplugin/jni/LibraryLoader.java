@@ -1,5 +1,3 @@
-//
-
 package com.waterloorocketry.airbrakeplugin.jni;
 
 import java.io.*;
