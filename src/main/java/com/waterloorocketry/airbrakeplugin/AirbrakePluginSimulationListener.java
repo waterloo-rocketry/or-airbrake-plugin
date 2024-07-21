@@ -18,7 +18,7 @@ import net.sf.openrocket.unit.UnitGroup;
 public class AirbrakePluginSimulationListener extends AbstractSimulationListener {
     private final Airbrakes airbrakes;
     private final Controller controller;
-    private final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
+    public static final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
     private double ext = 0.0;
 
     public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller) {
