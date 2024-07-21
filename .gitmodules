@@ -1,0 +1,3 @@
+[submodule "src/main/cpp/cansw_processor_stm"]
+	path = src/main/cpp/cansw_processor_stm
+	url = https://github.com/waterloo-rocketry/cansw_processor_stm

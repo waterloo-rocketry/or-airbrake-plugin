@@ -1,6 +1,5 @@
-package com.waterloorocketry.airbrakeplugin.test.simulated;
+package com.waterloorocketry.airbrakeplugin.simulated;
 
-import com.waterloorocketry.airbrakeplugin.simulated.SimulatedDragForceInterpolator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,6 @@
-// Based on: https://github.com/stwind/gradle-jni
+//
 
-package jni;
+package com.waterloorocketry.airbrakeplugin.jni;
 
 import java.io.*;
 import java.net.URL;
@@ -26,7 +26,7 @@ public class LibraryLoader {
      * @param cls Class to load native methods
      * @param name Name of the library
      */
-    public static void load(Class<?> cls, String name) {
+    static void load(Class<?> cls, String name) {
         String path = "/lib" + name + "." + getExt();
         URL url = cls.getResource(path);
         if (url == null) {

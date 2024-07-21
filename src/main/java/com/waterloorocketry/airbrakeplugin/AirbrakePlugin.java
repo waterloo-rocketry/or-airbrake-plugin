@@ -6,14 +6,12 @@ import com.waterloorocketry.airbrakeplugin.airbrake.SimulatedAirbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.AlwaysOpenController;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
 import com.waterloorocketry.airbrakeplugin.controller.PIDController;
-import jni.Tools;
 import net.sf.openrocket.simulation.SimulationConditions;
 import net.sf.openrocket.simulation.exception.SimulationException;
 import net.sf.openrocket.simulation.extension.AbstractSimulationExtension;
 import net.sf.openrocket.simulation.FlightDataType;
 import net.sf.openrocket.unit.UnitGroup;
 
-import javax.naming.ldap.Control;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +40,6 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
     }
 
     AirbrakePlugin() {
-        new Tools().bar();
-
         types.add(airbrakeExt);
     }
 

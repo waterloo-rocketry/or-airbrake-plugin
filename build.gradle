@@ -70,3 +70,5 @@ tasks.register('tune', JavaExec) {
     mainClass = 'com.waterloorocketry.airbrakeplugin.PidTuner'
     classpath = files('./OpenRocket-23.09.jar', tasks.jar)
 }
+
+tasks.test.systemProperty 'java.library.path', 'build/natives/lib'
