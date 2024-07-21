@@ -22,7 +22,12 @@ public class LazyNavigableMap<K, V, R> extends LazySortedMap<K, V, R> implements
 
     @Override
     public Entry<K, R> lowerEntry(K key) {
-        return new ComputedEntry<>(getMap().lowerEntry(key), getCompute());
+        Entry<K, V> entry = getMap().lowerEntry(key);
+        if (entry != null) {
+            return new ComputedEntry<>(entry, getCompute());
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -32,7 +37,12 @@ public class LazyNavigableMap<K, V, R> extends LazySortedMap<K, V, R> implements
 
     @Override
     public Entry<K, R> floorEntry(K key) {
-        return new ComputedEntry<>(getMap().floorEntry(key), getCompute());
+        Entry<K, V> entry = getMap().floorEntry(key);
+        if (entry != null) {
+            return new ComputedEntry<>(entry, getCompute());
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -42,7 +52,12 @@ public class LazyNavigableMap<K, V, R> extends LazySortedMap<K, V, R> implements
 
     @Override
     public Entry<K, R> ceilingEntry(K key) {
-        return new ComputedEntry<>(getMap().ceilingEntry(key), getCompute());
+        Entry<K, V> entry = getMap().ceilingEntry(key);
+        if (entry != null) {
+            return new ComputedEntry<>(entry, getCompute());
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -52,7 +67,12 @@ public class LazyNavigableMap<K, V, R> extends LazySortedMap<K, V, R> implements
 
     @Override
     public Entry<K, R> higherEntry(K key) {
-        return new ComputedEntry<>(getMap().higherEntry(key), getCompute());
+        Entry<K, V> entry = getMap().higherEntry(key);
+        if (entry != null) {
+            return new ComputedEntry<>(entry, getCompute());
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -62,22 +82,42 @@ public class LazyNavigableMap<K, V, R> extends LazySortedMap<K, V, R> implements
 
     @Override
     public Entry<K, R> firstEntry() {
-        return new ComputedEntry<>(getMap().firstEntry(), getCompute());
+        Entry<K, V> entry = getMap().firstEntry();
+        if (entry != null) {
+            return new ComputedEntry<>(entry, getCompute());
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Entry<K, R> lastEntry() {
-        return new ComputedEntry<>(getMap().lastEntry(), getCompute());
+        Entry<K, V> entry = getMap().lastEntry();
+        if (entry != null) {
+            return new ComputedEntry<>(entry, getCompute());
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Entry<K, R> pollFirstEntry() {
-        return new ComputedEntry<>(getMap().pollFirstEntry(), getCompute());
+        Entry<K, V> entry = getMap().pollFirstEntry();
+        if (entry != null) {
+            return new ComputedEntry<>(entry, getCompute());
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Entry<K, R> pollLastEntry() {
-        return new ComputedEntry<>(getMap().pollLastEntry(), getCompute());
+        Entry<K, V> entry = getMap().pollLastEntry();
+        if (entry != null) {
+            return new ComputedEntry<>(entry, getCompute());
+        } else {
+            return null;
+        }
     }
 
     @Override
