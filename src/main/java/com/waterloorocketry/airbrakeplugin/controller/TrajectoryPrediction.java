@@ -1,5 +1,6 @@
 package com.waterloorocketry.airbrakeplugin.controller;
 
+import com.waterloorocketry.airbrakeplugin.jni.ProcessorCalculations;
 import com.waterloorocketry.airbrakeplugin.simulated.AirDensity;
 import com.waterloorocketry.airbrakeplugin.simulated.SimulatedDragForceInterpolator;
 
@@ -45,7 +46,8 @@ public class TrajectoryPrediction {
     static Forces get_forces(double extension, double mass, double velX, double velZ, double alt){
         Forces forces = new Forces();
         double velT = Math.sqrt(velZ*velZ + velX*velX);
-        double Fd = -interp.compute(new SimulatedDragForceInterpolator.Data(extension, velT, alt)); // force of drag (N)
+        double Fd = -ProcessorCalculations.interpolateDrag((float) extension, (float) velT, (float) alt);
+//        double Fd = -interp.compute(new SimulatedDragForceInterpolator.Data(extension, velT, alt)); // force of drag (N)
         double Fg = -gravitational_acceleration(alt) * mass; // force of gravity (N)
         forces.Fz = Fd * (velZ/velT) + Fg;
         forces.Fx = Fd * (velX/velT);
