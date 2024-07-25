@@ -37,7 +37,7 @@ public class ProcessorCalculationsTest {
             float drag = Float.parseFloat(values[3]);
             float interpDrag = ProcessorCalculations.interpolateDrag(ext, vel, alt);
             Assertions.assertTrue(Math.abs(interpDrag - drag) < 20 || Math.abs(interpDrag - drag) / drag < 0.03,
-                    "Actual drag: " + drag + ", interpolated drag: " + interpDrag);
+                    "Actual drag: " + drag + ", interpolated drag: " + interpDrag + ", ext: " + ext + ", vel: " + vel + ", alt: " + alt);
         }
     }
 }
