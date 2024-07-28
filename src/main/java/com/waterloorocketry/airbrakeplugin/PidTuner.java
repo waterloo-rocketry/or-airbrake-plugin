@@ -31,11 +31,22 @@ public class PidTuner {
     /**
      * File to load rocket from
      */
-    private static final String ROCKET_FILE = "./rockets/c31a.ork";
+    private static final String ROCKET_FILE = "./rockets/Cycle_4_REVIEWED.ork";
     /**
      * File to load rocket thrust curve data from
      */
-    private static final String THRUST_CURVE_FILE = "./rockets/Kismet_v4_C2-2.rse";
+    private static final String THRUST_CURVE_FILE = "./rockets/Eridium_Flight_RSE.rse";
+
+    /**
+     * PID controller target apogee (meters)
+     */
+    private static final double TARGET_APOGEE_M = 6660;
+    /**
+     * PID params to tune
+     */
+    private static final double Kp = 0.01;
+    private static final double Ki = 0.00005;
+    private static final double Kd = 0.0001;
 
     public static void main(String[] args) throws Exception {
         initializeOpenRocket();
@@ -50,7 +61,7 @@ public class PidTuner {
 
         Simulation simulation = new Simulation(doc, doc.getRocket());
 
-        Controller controller = new PIDController(10000, 0.0, 0.0, 0.0);
+        Controller controller = new PIDController(TARGET_APOGEE_M, Kp, Ki, Kd);
         Airbrakes airbrakes = new SimulatedAirbrakes();
         SimulationListener listener = new AirbrakePluginSimulationListener(airbrakes, controller);
 

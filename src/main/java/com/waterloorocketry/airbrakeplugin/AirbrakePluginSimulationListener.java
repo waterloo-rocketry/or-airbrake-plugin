@@ -27,8 +27,9 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         this.controller = controller;
     }
 
-    private boolean burnout(SimulationStatus status) {
-        return status.getSimulationTime() > 9;
+    // Airbrakes only allowed between 9s and while vertical velocity > 34 m/s
+    private boolean isExtensionAllowed(SimulationStatus status) {
+        return status.getSimulationTime() > 9 && status.getRocketVelocity().z > 34.0;
     }
 
     /**
@@ -41,7 +42,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         FlightDataBranch flightData = status.getFlightData();
 
         // Only run controller during coast phase. If not in coast, still set ext to 0 (better than NaN)
-        if (burnout(status) && !status.isApogeeReached()) {
+        if (isExtensionAllowed(status)) {
             Controller.RocketState data = new Controller.RocketState(status);
 
             ext = controller.calculateTargetExt(data, status.getSimulationTime(), ext);
@@ -77,7 +78,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         final double velocityZ = status.getRocketVelocity().z;
 
         // Override CD only during coast, and until velocity is too small for the drag tabulation to be accurate
-        if (burnout(status) && !status.isApogeeReached() && velocityZ > 34.0) {
+        if (isExtensionAllowed(status)) {
             // Get latest flight conditions and airbrake extension
             FlightDataBranch flightData = status.getFlightData();
             final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
