@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jfloat JNICALL Java_com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations_interpolateDrag
   (JNIEnv *, jclass, jfloat, jfloat, jfloat);
 
+/*
+ * Class:     com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations
+ * Method:    getMaxAltitude
+ * Signature: (FFFFF)F
+ */
+JNIEXPORT jfloat JNICALL Java_com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations_getMaxAltitude
+  (JNIEnv *, jclass, jfloat, jfloat, jfloat, jfloat, jfloat);
+
 #ifdef __cplusplus
 }
 #endif
