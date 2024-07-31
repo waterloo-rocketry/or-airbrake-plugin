@@ -16,6 +16,7 @@ public class PIDController implements Controller {
     @Override
     public double calculateTargetExt(RocketState rocketState, double time, double extension) {
         double vX = Math.sqrt(rocketState.velocityX * rocketState.velocityX + rocketState.velocityY * rocketState.velocityY);
+        // Use a constant 0.5 extension for traj pred (new controller scheme, explained in slack)
         double predicted = ProcessorCalculations.getMaxAltitude((float) rocketState.velocityZ, (float) vX, (float) rocketState.positionZ, 0.5F, (float) ROCKET_BURNOUT_MASS); //z displacement, z velocity, ...; +Z is "up" in OR
         float control = impl.updateController((float) (time * 1000), (float) (targetAltitude - predicted));
         return Math.max(0, Math.min(1, 0.5 - control));
