@@ -18,10 +18,10 @@ JNIEXPORT void JNICALL Java_com_waterloorocketry_airbrakeplugin_jni_ProcessorCal
 /*
  * Class:     com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations_ControllerState
  * Method:    updateController
- * Signature: (FF)F
+ * Signature: (FFFFFFF)F
  */
 JNIEXPORT jfloat JNICALL Java_com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations_00024ControllerState_updateController
-  (JNIEnv *, jobject, jfloat, jfloat);
+  (JNIEnv *, jobject, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
 
 #ifdef __cplusplus
 }

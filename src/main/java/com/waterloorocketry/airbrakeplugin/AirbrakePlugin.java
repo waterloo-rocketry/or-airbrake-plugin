@@ -57,7 +57,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         if (isAlwaysOpen()) {
             controller = new AlwaysOpenController(getAlwaysOpenExt());
         } else {
-            controller = new PIDController(getTargetApogee(), getKp(), getKi(), getKd());
+            controller = new PIDController((float) getTargetApogee(), (float) getKp(), (float) getKi(), (float) getKd());
         }
 
         Airbrakes airbrakes = new SimulatedAirbrakes();

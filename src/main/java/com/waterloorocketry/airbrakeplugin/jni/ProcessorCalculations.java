@@ -7,7 +7,7 @@ public class ProcessorCalculations {
 
     public static native float interpolateDrag(float extension, float velocity, float altitude);
 
-    public static native float getMaxAltitude(float velY, float velX, float altitude, float airbrakeExt, float mass);
+    public static native float getMaxAltitude(float velY, float velX, float altitude);
 
     public static class ControllerState {
         public float controllerTermI;
@@ -17,6 +17,6 @@ public class ProcessorCalculations {
 
         public native void init();
 
-        public native float updateController(float timeMs, float error);
+        public native float updateController(float kp, float ki, float kd, float iSatmax, float timeMs, float trajectory, float target);
     }
 }

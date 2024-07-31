@@ -40,13 +40,13 @@ public class PidTuner {
     /**
      * PID controller target apogee (meters)
      */
-    private static final double TARGET_APOGEE_M = 6660;
+    private static final float TARGET_APOGEE_M = 6660;
     /**
      * PID params to tune
      */
-    private static final double Kp = 0.01;
-    private static final double Ki = 0.00005;
-    private static final double Kd = 0.0001;
+    private static final float Kp = 0.01F;
+    private static final float Ki = 0.00005F;
+    private static final float Kd = 0.0001F;
 
     public static void main(String[] args) throws Exception {
         initializeOpenRocket();
