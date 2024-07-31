@@ -7,4 +7,7 @@ add_library(processor_calculations SHARED
     cansw_processor_stm/STM32Cube/Calculations/trajectory_lib.c
     processor_calculations.cpp
 )
-set_target_properties(processor_calculations PROPERTIES LINK_FLAGS "-Wl,--add-stdcall-alias")
+IF (WIN32)
+  set_target_properties(processor_calculations PROPERTIES LINK_FLAGS "-Wl,--add-stdcall-alias")
+ENDIF()
+
