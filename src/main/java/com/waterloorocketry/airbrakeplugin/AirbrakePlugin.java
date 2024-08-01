@@ -64,7 +64,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         }
 
         Airbrakes airbrakes = new SimulatedAirbrakes();
-        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller));
+        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller, isNoisy()));
     }
 
     //
@@ -78,6 +78,15 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
     public void setAlwaysOpen(boolean value) {
         config.put("alwaysOpen", value);
+        fireChangeEvent();
+    }
+
+    public boolean isNoisy() {
+        return config.getBoolean("noisy", false);
+    }
+
+    public void setNoisy(boolean value) {
+        config.put("noisy", value);
         fireChangeEvent();
     }
 
