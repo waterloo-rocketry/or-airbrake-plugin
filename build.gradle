@@ -44,7 +44,9 @@ task compileJNI {
     doLast {
         exec {
             mkdir 'build/natives'
-            commandLine 'sh', 'build.sh'
+            workingDir 'build/natives'
+            commandLine 'cmake', '-G"Unix Makefiles"', '../..'
+            commandLine 'make'
         }
     }
 }
