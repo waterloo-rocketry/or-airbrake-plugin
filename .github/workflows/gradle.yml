@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: or-airbrake-plugin-${{ matrix.platform }}.jar
-          path: build/libs/or-airbrake-plugin-1.0-SNAPSHOT.jar
+          path: build/libs/or-airbrake-plugin-*.jar
 
   test:
 
