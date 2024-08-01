@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27.7)
+cmake_minimum_required(VERSION 3.18.4)
 
 set_source_files_properties(cansw_processor_stm/STM32Cube/Calculations/controller_lib.c PROPERTIES LANGUAGE CXX)
 set_source_files_properties(cansw_processor_stm/STM32Cube/Calculations/trajectory_lib.c PROPERTIES LANGUAGE CXX)
