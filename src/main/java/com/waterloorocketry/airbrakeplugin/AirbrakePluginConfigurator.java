@@ -35,10 +35,18 @@ public class AirbrakePluginConfigurator extends AbstractSwingSimulationExtension
         // use the getter/setter for AlwaysOpen which are defined in AirbrakePlugin
         final BooleanModel alwaysOpen = new BooleanModel(extension, "AlwaysOpen");
 
-        JCheckBox checkbox = new JCheckBox(alwaysOpen);
-        panel.add(checkbox, "wrap");
+        JCheckBox alwaysOpenCheckbox = new JCheckBox(alwaysOpen);
+        panel.add(alwaysOpenCheckbox, "wrap");
 
-        // Add input rows. Max values are somewhat arbitrary for those that have no actual max
+        // ------------------ Add noisy mode checkbox ------------------
+        panel.add(new JLabel("Enable Faking Noisy Data:"));
+        final BooleanModel noisy = new BooleanModel(extension, "Noisy");
+
+        JCheckBox noisyCheckbox = new JCheckBox(noisy);
+        panel.add(noisyCheckbox, "wrap");
+
+
+        // ---- Add input rows. Max values are somewhat arbitrary for those that have no actual max
         addRow("Target apogee", "TargetApogee", UnitGroup.UNITS_DISTANCE, 0.0, 100000);
 
         addRow("Kp", "Kp", UnitGroup.UNITS_COEFFICIENT, 0.0, 100);

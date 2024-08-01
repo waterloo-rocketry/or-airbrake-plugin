@@ -19,14 +19,16 @@ import net.sf.openrocket.unit.UnitGroup;
 public class AirbrakePluginSimulationListener extends AbstractSimulationListener {
     private final Airbrakes airbrakes;
     private final Controller controller;
+    private final boolean noisy;
     public static final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
     public static final FlightDataType predictedApogeeDataType = FlightDataType.getType("predictedApogee", "predictedApogee", UnitGroup.UNITS_DISTANCE);
     private double ext = 0.0;
 
-    public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller) {
+    public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller, boolean noisy) {
         super();
         this.airbrakes = airbrakes;
         this.controller = controller;
+        this.noisy = noisy;
     }
 
     // Airbrakes only allowed between 9s and while vertical velocity > 34 m/s
@@ -43,6 +45,17 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
     public boolean preStep(SimulationStatus status) {
         FlightDataBranch flightData = status.getFlightData();
         Controller.RocketState data = new Controller.RocketState(status);
+
+        // Add gaussian noise to the "measured" state data if enabled
+        if (noisy) {
+            java.util.Random r = new java.util.Random();
+            data.velocityX = r.nextGaussian(data.velocityX, 0.5);
+            data.velocityY = r.nextGaussian(data.velocityY, 0.5);
+            data.velocityZ = r.nextGaussian(data.velocityZ, 1);
+            data.positionX = r.nextGaussian(data.positionX, 1);
+            data.positionY = r.nextGaussian(data.positionY, 1);
+            data.positionZ = r.nextGaussian(data.positionZ, 2);
+        }
 
         // Only run controller during coast phase. If not in coast, still set ext to 0 (better than NaN)
         if (isExtensionAllowed(status)) {
