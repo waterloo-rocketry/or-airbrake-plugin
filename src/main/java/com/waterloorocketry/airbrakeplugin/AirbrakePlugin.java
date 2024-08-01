@@ -61,7 +61,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         if (isAlwaysOpen()) {
             controller = new AlwaysOpenController(getAlwaysOpenExt());
         } else {
-            controller = new PIDController((float) getTargetApogee(), (float) getKp(), (float) getKi(), (float) getKd());
+            controller = new PIDController((float) getTargetApogee(), (float) getKp(), (float) getKi(), (float) getKd(), (float) getISatmax());
         }
 
         Airbrakes airbrakes = new SimulatedAirbrakes();
@@ -162,6 +162,14 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
     public void setKd(double Kd) {
         config.put("Kd", Kd);
+        fireChangeEvent();
+    }
+    public double getISatmax() {
+        return config.getDouble("ISatmax", 10.0);
+    }
+
+    public void setISatmax(double v) {
+        config.put("ISatmax", v);
         fireChangeEvent();
     }
 

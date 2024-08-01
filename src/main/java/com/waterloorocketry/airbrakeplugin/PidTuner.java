@@ -60,7 +60,7 @@ public class PidTuner {
 
         Simulation simulation = new Simulation(doc, doc.getRocket());
 
-        Controller controller = new PIDController(TARGET_APOGEE_M, Kp, Ki, Kd);
+        Controller controller = new PIDController(TARGET_APOGEE_M, Kp, Ki, Kd, 10);
         Airbrakes airbrakes = new SimulatedAirbrakes();
         SimulationListener listener = new AirbrakePluginSimulationListener(airbrakes, controller, new Noise(10, 0.5, 0.5, 2));
 

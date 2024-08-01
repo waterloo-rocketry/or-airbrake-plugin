@@ -57,6 +57,7 @@ public class AirbrakePluginConfigurator extends AbstractSwingSimulationExtension
         addRow("Kp*1000", "Kp", 1000.0, UnitGroup.UNITS_COEFFICIENT, 0.0, 100);
         addRow("Ki*1000", "Ki", 1000.0, UnitGroup.UNITS_COEFFICIENT, 0.0, 100);
         addRow("Kd*1000", "Kd", 1000.0, UnitGroup.UNITS_COEFFICIENT, 0.0, 100);
+        addRow("ISatmax", "ISatmax", 1.0, UnitGroup.UNITS_COEFFICIENT, 0.0, 100);
 
         // Extension must be within 0-100%
         addRow("Always-open extension %", "AlwaysOpenExt", 1.0, UnitGroup.UNITS_RELATIVE, 0.0, 1);
