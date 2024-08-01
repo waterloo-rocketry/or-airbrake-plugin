@@ -7,6 +7,7 @@ import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
 import com.waterloorocketry.airbrakeplugin.airbrake.SimulatedAirbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
 import com.waterloorocketry.airbrakeplugin.controller.PIDController;
+import com.waterloorocketry.airbrakeplugin.simulated.Noise;
 import net.sf.openrocket.database.Databases;
 import net.sf.openrocket.document.OpenRocketDocument;
 import net.sf.openrocket.document.Simulation;
@@ -15,9 +16,7 @@ import net.sf.openrocket.gui.plot.PlotConfiguration;
 import net.sf.openrocket.gui.plot.SimulationPlotDialog;
 import net.sf.openrocket.gui.util.SwingPreferences;
 import net.sf.openrocket.plugin.PluginModule;
-import net.sf.openrocket.simulation.FlightDataType;
 import net.sf.openrocket.simulation.FlightEvent;
-import net.sf.openrocket.simulation.SimulationConditions;
 import net.sf.openrocket.simulation.listeners.SimulationListener;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.startup.GuiModule;
@@ -63,7 +62,7 @@ public class PidTuner {
 
         Controller controller = new PIDController(TARGET_APOGEE_M, Kp, Ki, Kd);
         Airbrakes airbrakes = new SimulatedAirbrakes();
-        SimulationListener listener = new AirbrakePluginSimulationListener(airbrakes, controller, true);
+        SimulationListener listener = new AirbrakePluginSimulationListener(airbrakes, controller, new Noise(10, 0.5, 0.5, 2));
 
         simulation.simulate(listener);
         System.out.println("max altitude: " + simulation.getSimulatedData().getMaxAltitude());

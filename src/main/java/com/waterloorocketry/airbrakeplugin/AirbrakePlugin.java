@@ -6,6 +6,7 @@ import com.waterloorocketry.airbrakeplugin.airbrake.SimulatedAirbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.AlwaysOpenController;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
 import com.waterloorocketry.airbrakeplugin.controller.PIDController;
+import com.waterloorocketry.airbrakeplugin.simulated.Noise;
 import net.sf.openrocket.simulation.SimulationConditions;
 import net.sf.openrocket.simulation.exception.SimulationException;
 import net.sf.openrocket.simulation.extension.AbstractSimulationExtension;
@@ -64,7 +65,8 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         }
 
         Airbrakes airbrakes = new SimulatedAirbrakes();
-        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller, isNoisy()));
+        Noise noise = isNoisy() ? new Noise(getStddevPositionZ(), getStddevVelocityX(), getStddevVelocityY(), getStddevVelocityZ()) : null;
+        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller, noise));
     }
 
     //
@@ -89,6 +91,43 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         config.put("noisy", value);
         fireChangeEvent();
     }
+
+    public double getStddevPositionZ() {
+        return config.getDouble("stddevPositionZ", 10.0);
+    }
+
+    public void setStddevPositionZ(double value) {
+        config.put("stddevPositionZ", value);
+        fireChangeEvent();
+    }
+
+    public double getStddevVelocityX() {
+        return config.getDouble("stddevVelocityX", 0.5);
+    }
+
+    public void setStddevVelocityX(double value) {
+        config.put("stddevVelocityX", value);
+        fireChangeEvent();
+    }
+
+    public double getStddevVelocityY() {
+        return config.getDouble("stddevVelocityY", 0.5);
+    }
+
+    public void setStddevVelocityY(double value) {
+        config.put("stddevVelocityY", value);
+        fireChangeEvent();
+    }
+
+    public double getStddevVelocityZ() {
+        return config.getDouble("stddevVelocityZ", 2.0);
+    }
+
+    public void setStddevVelocityZ(double value) {
+        config.put("stddevVelocityZ", value);
+        fireChangeEvent();
+    }
+
 
     public double getTargetApogee() {
         return config.getDouble("targetApogee", 10000.0);
