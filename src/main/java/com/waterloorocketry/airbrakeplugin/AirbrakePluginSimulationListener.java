@@ -2,6 +2,7 @@ package com.waterloorocketry.airbrakeplugin;
 
 import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
+import com.waterloorocketry.airbrakeplugin.controller.TrajectoryPrediction;
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.aerodynamics.FlightConditions;
 import net.sf.openrocket.simulation.FlightDataBranch;
@@ -19,6 +20,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
     private final Airbrakes airbrakes;
     private final Controller controller;
     public static final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
+    public static final FlightDataType predictedApogeeDataType = FlightDataType.getType("predictedApogee", "predictedApogee", UnitGroup.UNITS_DISTANCE);
     private double ext = 0.0;
 
     public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller) {
@@ -40,11 +42,10 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
     @Override
     public boolean preStep(SimulationStatus status) {
         FlightDataBranch flightData = status.getFlightData();
+        Controller.RocketState data = new Controller.RocketState(status);
 
         // Only run controller during coast phase. If not in coast, still set ext to 0 (better than NaN)
         if (isExtensionAllowed(status)) {
-            Controller.RocketState data = new Controller.RocketState(status);
-
             ext = controller.calculateTargetExt(data, status.getSimulationTime(), ext);
             if (!(0.0 <= ext && ext <= 1.0)) {
                 throw new IndexOutOfBoundsException("airbrakes extension amount was not from 0 to 1");
@@ -53,6 +54,9 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         } else {
             flightData.setValue(airbrakeExtDataType, 0);
         }
+
+        // This is solely for graphing trajectory prediction outputs
+        flightData.setValue(predictedApogeeDataType, TrajectoryPrediction.get_max_altitude(data));
 
         return true;
     }

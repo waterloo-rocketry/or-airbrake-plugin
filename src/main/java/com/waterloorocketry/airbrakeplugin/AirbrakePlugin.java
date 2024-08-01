@@ -27,6 +27,8 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
     // Create new FlightDataType to hold airbrake extension percentage
     private static final FlightDataType airbrakeExt = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
+    // Create new FlightDataType to hold trajpred apogee output even though its not a flight data, this allows us to graph it
+    private static final FlightDataType predictedApogee = FlightDataType.getType("predictedApogee", "predictedApogee", UnitGroup.UNITS_DISTANCE);
     private static final ArrayList<FlightDataType> types = new ArrayList<FlightDataType>();
     private static final double TARGET_APOGEE = 8000; //m
 
@@ -41,6 +43,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
     AirbrakePlugin() {
         types.add(airbrakeExt);
+        types.add(predictedApogee);
     }
 
     /**

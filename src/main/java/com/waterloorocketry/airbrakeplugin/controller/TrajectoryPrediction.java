@@ -120,34 +120,12 @@ public class TrajectoryPrediction {
         return 2 * drag_force / (AirDensity.getAirDensityAtAltitude(altitude) * rocket_area(extension) * (velocity * velocity)); //Cd
     }
 
-    /** @return max apogee
-     * @param velocityY vertical velocity (m/s)
-     * @param velocityX horizontal velocity (m/s)
-     * @param altitude (m)
-     * @param airbrake_ext extension of airbrakes, 0-1
-     * @param mass (kg)*/
-    public static double get_max_altitude(double velocityY, double velocityX, double altitude, double airbrake_ext, double mass) {
-
-        double h = 0.05; // interval of change for rk4
-        double prevAlt = 0.0; // variable to store previous altitude
-
-        RK4State states = new RK4State();
-        states.alt = altitude;
-        states.velZ = velocityY;
-        states.velX = velocityX;
-
-        while (states.alt >= prevAlt) {
-
-            // to check if altitude is decreasing to exit the loop
-            prevAlt = states.alt;
-
-            // update velocity and altitude
-            states = rk4(h, mass, airbrake_ext, states);
-
-            // System.out.println("pred alt: " + states.alt + "m");
-        }
-
-        return states.alt;
+    /** @return max apogee from proc firmware's trajpred lib
+     * @param rocketState rocket state
+     * */
+    public static double get_max_altitude(Controller.RocketState rocketState) {
+        double vX = Math.sqrt(rocketState.velocityX * rocketState.velocityX + rocketState.velocityY * rocketState.velocityY);
+        return ProcessorCalculations.getMaxAltitude((float) rocketState.velocityZ, (float) vX, (float) rocketState.positionZ); //z displacement, z velocity, ...; +Z is "up" in OR
     }
 }
 
