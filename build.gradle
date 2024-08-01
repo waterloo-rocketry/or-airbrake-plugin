@@ -29,7 +29,7 @@ sourceSets {
     main {
         resources {
             srcDirs 'build/natives/bin'
-            srcDirs 'build/natives/libs'
+            srcDirs 'build/natives/lib'
         }
     }
 }
