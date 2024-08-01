@@ -23,10 +23,52 @@ test {
     useJUnitPlatform()
 }
 
+// template from: https://github.com/stwind/gradle-jni
+
+sourceSets {
+    main {
+        resources {
+            srcDirs 'build/natives/bin'
+            srcDirs 'build/natives/lib'
+        }
+    }
+}
+
+compileJava {
+    options.compilerArgs += ['-h', file('src/main/include')]
+}
+
+task compileJNI {
+    dependsOn compileJava
+
+    doLast {
+        exec {
+            mkdir 'build/natives'
+            workingDir 'build/natives'
+            commandLine 'cmake', '-G', 'Unix Makefiles', '../..'
+        }
+        exec {
+            workingDir 'build/natives'
+            commandLine 'make'
+        }
+    }
+}
+
+clean.doFirst {
+    delete fileTree('src/main/include') {
+        include 'jni_*.h'
+    }
+}
+
+processResources {
+    dependsOn compileJNI
+}
+
 tasks.register('run', JavaExec) {
     dependsOn jar
     mainClass = 'net.sf.openrocket.startup.OpenRocket'
     classpath = files('./OpenRocket-23.09.jar', tasks.jar)
+    systemProperty 'java.library.path', 'build/natives/lib'
 }
 
 tasks.register('tune', JavaExec) {
@@ -34,3 +76,5 @@ tasks.register('tune', JavaExec) {
     mainClass = 'com.waterloorocketry.airbrakeplugin.PidTuner'
     classpath = files('./OpenRocket-23.09.jar', tasks.jar)
 }
+
+tasks.test.systemProperty 'java.library.path', 'build/natives/lib'

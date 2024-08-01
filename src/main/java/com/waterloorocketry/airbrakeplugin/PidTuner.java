@@ -7,6 +7,7 @@ import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
 import com.waterloorocketry.airbrakeplugin.airbrake.SimulatedAirbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
 import com.waterloorocketry.airbrakeplugin.controller.PIDController;
+import com.waterloorocketry.airbrakeplugin.simulated.Noise;
 import net.sf.openrocket.database.Databases;
 import net.sf.openrocket.document.OpenRocketDocument;
 import net.sf.openrocket.document.Simulation;
@@ -15,9 +16,7 @@ import net.sf.openrocket.gui.plot.PlotConfiguration;
 import net.sf.openrocket.gui.plot.SimulationPlotDialog;
 import net.sf.openrocket.gui.util.SwingPreferences;
 import net.sf.openrocket.plugin.PluginModule;
-import net.sf.openrocket.simulation.FlightDataType;
 import net.sf.openrocket.simulation.FlightEvent;
-import net.sf.openrocket.simulation.SimulationConditions;
 import net.sf.openrocket.simulation.listeners.SimulationListener;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.startup.GuiModule;
@@ -31,11 +30,22 @@ public class PidTuner {
     /**
      * File to load rocket from
      */
-    private static final String ROCKET_FILE = "./rockets/c31a.ork";
+    private static final String ROCKET_FILE = "./rockets/Cycle_4_REVIEWED.ork";
     /**
      * File to load rocket thrust curve data from
      */
-    private static final String THRUST_CURVE_FILE = "./rockets/Kismet_v4_C2-2.rse";
+    private static final String THRUST_CURVE_FILE = "./rockets/Eridium_Flight_RSE.rse";
+
+    /**
+     * PID controller target apogee (meters)
+     */
+    private static final float TARGET_APOGEE_M = 6660;
+    /**
+     * PID params to tune
+     */
+    private static final float Kp = 0.01F;
+    private static final float Ki = 0.00005F;
+    private static final float Kd = 0.0001F;
 
     public static void main(String[] args) throws Exception {
         initializeOpenRocket();
@@ -50,9 +60,9 @@ public class PidTuner {
 
         Simulation simulation = new Simulation(doc, doc.getRocket());
 
-        Controller controller = new PIDController(10000, 0.0, 0.0, 0.0);
+        Controller controller = new PIDController(TARGET_APOGEE_M, Kp, Ki, Kd, 10);
         Airbrakes airbrakes = new SimulatedAirbrakes();
-        SimulationListener listener = new AirbrakePluginSimulationListener(airbrakes, controller);
+        SimulationListener listener = new AirbrakePluginSimulationListener(airbrakes, controller, new Noise(10, 0.5, 0.5, 2));
 
         simulation.simulate(listener);
         System.out.println("max altitude: " + simulation.getSimulatedData().getMaxAltitude());

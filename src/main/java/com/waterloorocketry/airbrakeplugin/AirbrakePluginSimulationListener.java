@@ -2,6 +2,8 @@ package com.waterloorocketry.airbrakeplugin;
 
 import com.waterloorocketry.airbrakeplugin.airbrake.Airbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
+import com.waterloorocketry.airbrakeplugin.controller.TrajectoryPrediction;
+import com.waterloorocketry.airbrakeplugin.simulated.Noise;
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.aerodynamics.FlightConditions;
 import net.sf.openrocket.simulation.FlightDataBranch;
@@ -18,17 +20,21 @@ import net.sf.openrocket.unit.UnitGroup;
 public class AirbrakePluginSimulationListener extends AbstractSimulationListener {
     private final Airbrakes airbrakes;
     private final Controller controller;
-    private final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
+    private final Noise noise;
+    public static final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
+    public static final FlightDataType predictedApogeeDataType = FlightDataType.getType("predictedApogee", "predictedApogee", UnitGroup.UNITS_DISTANCE);
     private double ext = 0.0;
 
-    public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller) {
+    public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller, Noise noise) {
         super();
         this.airbrakes = airbrakes;
         this.controller = controller;
+        this.noise = noise;
     }
 
-    private boolean burnout(SimulationStatus status) {
-        return status.getSimulationTime() > 9;
+    // Airbrakes only allowed between 9s and while vertical velocity > 34 m/s
+    private boolean isExtensionAllowed(SimulationStatus status) {
+        return status.getSimulationTime() > 9 && status.getRocketVelocity().z > 34.0;
     }
 
     /**
@@ -39,11 +45,19 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
     @Override
     public boolean preStep(SimulationStatus status) {
         FlightDataBranch flightData = status.getFlightData();
+        Controller.RocketState data = new Controller.RocketState(status);
+
+        // Add gaussian noise to the "measured" state data if enabled
+        if (noise != null) {
+            java.util.Random r = new java.util.Random();
+            data.velocityX = r.nextGaussian(data.velocityX, noise.getStddevVelocityX());
+            data.velocityY = r.nextGaussian(data.velocityY, noise.getStddevVelocityY());
+            data.velocityZ = r.nextGaussian(data.velocityZ, noise.getStddevVelocityZ());
+            data.positionZ = r.nextGaussian(data.positionZ, noise.getStddevPositionZ());
+        }
 
         // Only run controller during coast phase. If not in coast, still set ext to 0 (better than NaN)
-        if (burnout(status) && !status.isApogeeReached()) {
-            Controller.RocketState data = new Controller.RocketState(status);
-
+        if (isExtensionAllowed(status)) {
             ext = controller.calculateTargetExt(data, status.getSimulationTime(), ext);
             if (!(0.0 <= ext && ext <= 1.0)) {
                 throw new IndexOutOfBoundsException("airbrakes extension amount was not from 0 to 1");
@@ -52,6 +66,9 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         } else {
             flightData.setValue(airbrakeExtDataType, 0);
         }
+
+        // This is solely for graphing trajectory prediction outputs
+        flightData.setValue(predictedApogeeDataType, TrajectoryPrediction.get_max_altitude(data));
 
         return true;
     }
@@ -77,7 +94,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         final double velocityZ = status.getRocketVelocity().z;
 
         // Override CD only during coast, and until velocity is too small for the drag tabulation to be accurate
-        if (burnout(status) && !status.isApogeeReached() && velocityZ > 34.0) {
+        if (isExtensionAllowed(status)) {
             // Get latest flight conditions and airbrake extension
             FlightDataBranch flightData = status.getFlightData();
             final double airbrakeExt = flightData.getLast(airbrakeExtDataType);

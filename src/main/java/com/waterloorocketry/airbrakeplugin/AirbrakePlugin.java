@@ -6,13 +6,13 @@ import com.waterloorocketry.airbrakeplugin.airbrake.SimulatedAirbrakes;
 import com.waterloorocketry.airbrakeplugin.controller.AlwaysOpenController;
 import com.waterloorocketry.airbrakeplugin.controller.Controller;
 import com.waterloorocketry.airbrakeplugin.controller.PIDController;
+import com.waterloorocketry.airbrakeplugin.simulated.Noise;
 import net.sf.openrocket.simulation.SimulationConditions;
 import net.sf.openrocket.simulation.exception.SimulationException;
 import net.sf.openrocket.simulation.extension.AbstractSimulationExtension;
 import net.sf.openrocket.simulation.FlightDataType;
 import net.sf.openrocket.unit.UnitGroup;
 
-import javax.naming.ldap.Control;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +28,8 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
     // Create new FlightDataType to hold airbrake extension percentage
     private static final FlightDataType airbrakeExt = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
+    // Create new FlightDataType to hold trajpred apogee output even though its not a flight data, this allows us to graph it
+    private static final FlightDataType predictedApogee = FlightDataType.getType("predictedApogee", "predictedApogee", UnitGroup.UNITS_DISTANCE);
     private static final ArrayList<FlightDataType> types = new ArrayList<FlightDataType>();
     private static final double TARGET_APOGEE = 8000; //m
 
@@ -42,6 +44,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
     AirbrakePlugin() {
         types.add(airbrakeExt);
+        types.add(predictedApogee);
     }
 
     /**
@@ -58,11 +61,12 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         if (isAlwaysOpen()) {
             controller = new AlwaysOpenController(getAlwaysOpenExt());
         } else {
-            controller = new PIDController(getTargetApogee(), getKp(), getKi(), getKd());
+            controller = new PIDController((float) getTargetApogee(), (float) getKp(), (float) getKi(), (float) getKd(), (float) getISatmax());
         }
 
         Airbrakes airbrakes = new SimulatedAirbrakes();
-        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller));
+        Noise noise = isNoisy() ? new Noise(getStddevPositionZ(), getStddevVelocityX(), getStddevVelocityY(), getStddevVelocityZ()) : null;
+        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller, noise));
     }
 
     //
@@ -78,6 +82,52 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         config.put("alwaysOpen", value);
         fireChangeEvent();
     }
+
+    public boolean isNoisy() {
+        return config.getBoolean("noisy", false);
+    }
+
+    public void setNoisy(boolean value) {
+        config.put("noisy", value);
+        fireChangeEvent();
+    }
+
+    public double getStddevPositionZ() {
+        return config.getDouble("stddevPositionZ", 10.0);
+    }
+
+    public void setStddevPositionZ(double value) {
+        config.put("stddevPositionZ", value);
+        fireChangeEvent();
+    }
+
+    public double getStddevVelocityX() {
+        return config.getDouble("stddevVelocityX", 0.5);
+    }
+
+    public void setStddevVelocityX(double value) {
+        config.put("stddevVelocityX", value);
+        fireChangeEvent();
+    }
+
+    public double getStddevVelocityY() {
+        return config.getDouble("stddevVelocityY", 0.5);
+    }
+
+    public void setStddevVelocityY(double value) {
+        config.put("stddevVelocityY", value);
+        fireChangeEvent();
+    }
+
+    public double getStddevVelocityZ() {
+        return config.getDouble("stddevVelocityZ", 2.0);
+    }
+
+    public void setStddevVelocityZ(double value) {
+        config.put("stddevVelocityZ", value);
+        fireChangeEvent();
+    }
+
 
     public double getTargetApogee() {
         return config.getDouble("targetApogee", 10000.0);
@@ -112,6 +162,14 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
     public void setKd(double Kd) {
         config.put("Kd", Kd);
+        fireChangeEvent();
+    }
+    public double getISatmax() {
+        return config.getDouble("ISatmax", 10.0);
+    }
+
+    public void setISatmax(double v) {
+        config.put("ISatmax", v);
         fireChangeEvent();
     }
 
