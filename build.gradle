@@ -45,7 +45,10 @@ task compileJNI {
         exec {
             mkdir 'build/natives'
             workingDir 'build/natives'
-            commandLine 'cmake', '-G"Unix Makefiles"', '../..'
+            commandLine 'cmake', '-G', 'Unix Makefiles', '../..'
+        }
+        exec {
+            workingDir 'build/natives'
             commandLine 'make'
         }
     }
