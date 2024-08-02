@@ -67,12 +67,17 @@ public class SimulatedDragForceInterpolator implements Interpolator<SimulatedDra
 
     @Override
     public double compute(Data data) {
+        if (data.velocity < 34.0) {
+            return 0.0;
+        }
         // The functions are only evaluated when necessarily, since this map computes values lazily
         NavigableMap<Double, Double> perExt = new LazyNavigableMap<>(points, (m) -> {
             double x = (data.velocity - 273.9) / 148.7;
             double y = (data.altitude - 5000) / 3172;
             return m.compute(new Cubic2VariableFunction.Coordinate(x, y));
         });
-        return new LinearInterpolator(perExt).compute(data.extension);
+        double output = new LinearInterpolator(perExt).compute(data.extension);
+        assert output >= 0.0;
+        return output;
     }
 }
