@@ -99,7 +99,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
             FlightDataBranch flightData = status.getFlightData();
             final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
 
-            final double altitude = status.getRocketPosition().z + status.getSimulationConditions().getLaunchPosition().z;
+            final double altitude = status.getRocketPosition().z + status.getSimulationConditions().getLaunchSite().getAltitude();
 
             double dragForce = airbrakes.calculateDragForce(airbrakeExt, velocityZ, altitude);
 
