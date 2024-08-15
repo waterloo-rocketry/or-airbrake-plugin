@@ -24,17 +24,19 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
     public static final FlightDataType airbrakeExtDataType = FlightDataType.getType("airbrakeExt", "airbrakeExt", UnitGroup.UNITS_RELATIVE);
     public static final FlightDataType predictedApogeeDataType = FlightDataType.getType("predictedApogee", "predictedApogee", UnitGroup.UNITS_DISTANCE);
     private double ext = 0.0;
+    private final double extTime;
 
-    public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller, Noise noise) {
+    public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller, Noise noise, double extTime) {
         super();
         this.airbrakes = airbrakes;
         this.controller = controller;
         this.noise = noise;
+        this.extTime = extTime;
     }
 
-    // Airbrakes only allowed between 9s and while vertical velocity > 34 m/s
+    // Airbrakes only allowed between the given time (default 9 s) and while vertical velocity > 34 m/s
     private boolean isExtensionAllowed(SimulationStatus status) {
-        return status.getSimulationTime() > 9 && status.getRocketVelocity().z > 34.0;
+        return status.getSimulationTime() > extTime && status.getRocketVelocity().z > 34.0;
     }
 
     /**

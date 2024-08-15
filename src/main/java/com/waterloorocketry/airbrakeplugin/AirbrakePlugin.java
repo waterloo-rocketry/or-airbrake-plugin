@@ -31,7 +31,6 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
     // Create new FlightDataType to hold trajpred apogee output even though its not a flight data, this allows us to graph it
     private static final FlightDataType predictedApogee = FlightDataType.getType("predictedApogee", "predictedApogee", UnitGroup.UNITS_DISTANCE);
     private static final ArrayList<FlightDataType> types = new ArrayList<FlightDataType>();
-    private static final double TARGET_APOGEE = 8000; //m
 
     /**
      * Initialize the new airbrakeExt datatype we created by returning it here
@@ -66,7 +65,7 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
         Airbrakes airbrakes = new SimulatedAirbrakes();
         Noise noise = isNoisy() ? new Noise(getStddevPositionZ(), getStddevVelocityX(), getStddevVelocityY(), getStddevVelocityZ()) : null;
-        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller, noise));
+        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller, noise, getExtTime()));
     }
 
     //
@@ -179,6 +178,15 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
     public void setAlwaysOpenExt(double ext) {
         config.put("alwaysOpenExt", ext);
+        fireChangeEvent();
+    }
+
+    public double getExtTime() {
+        return config.getDouble("ExtTime", 9.0);
+    }
+
+    public void setExtTime(double time) {
+        config.put("ExtTime", time);
         fireChangeEvent();
     }
 }
