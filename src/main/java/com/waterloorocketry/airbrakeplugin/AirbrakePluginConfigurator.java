@@ -62,6 +62,8 @@ public class AirbrakePluginConfigurator extends AbstractSwingSimulationExtension
         // Extension must be within 0-100%
         addRow("Always-open extension %", "AlwaysOpenExt", 1.0, UnitGroup.UNITS_RELATIVE, 0.0, 1);
 
+        addRow("Extend lockout time", "ExtTime", 1.0, UnitGroup.UNITS_FLIGHT_TIME, 0.0, 30.0);
+
         return panel;
     }
 
