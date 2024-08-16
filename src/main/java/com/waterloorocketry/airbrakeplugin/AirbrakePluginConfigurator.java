@@ -64,6 +64,8 @@ public class AirbrakePluginConfigurator extends AbstractSwingSimulationExtension
 
         addRow("Extend lockout time", "ExtTime", 1.0, UnitGroup.UNITS_FLIGHT_TIME, 0.0, 30.0);
 
+        addRow("Reference extension", "ExtRef", 1.0, UnitGroup.UNITS_COEFFICIENT, 0.0, 1.0);
+
         return panel;
     }
 

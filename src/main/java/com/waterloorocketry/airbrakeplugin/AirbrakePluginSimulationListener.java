@@ -25,13 +25,15 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
     public static final FlightDataType predictedApogeeDataType = FlightDataType.getType("predictedApogee", "predictedApogee", UnitGroup.UNITS_DISTANCE);
     private double ext = 0.0;
     private final double extTime;
+    private final double extRef;
 
-    public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller, Noise noise, double extTime) {
+    public AirbrakePluginSimulationListener(Airbrakes airbrakes, Controller controller, Noise noise, double extTime, double extRef) {
         super();
         this.airbrakes = airbrakes;
         this.controller = controller;
         this.noise = noise;
         this.extTime = extTime;
+        this.extRef = extRef;
     }
 
     // Airbrakes only allowed between the given time (default 9 s) and while vertical velocity > 34 m/s
@@ -70,7 +72,7 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         }
 
         // This is solely for graphing trajectory prediction outputs
-        flightData.setValue(predictedApogeeDataType, TrajectoryPrediction.get_max_altitude(data));
+        flightData.setValue(predictedApogeeDataType, TrajectoryPrediction.get_max_altitude(extRef, data));
 
         return true;
     }

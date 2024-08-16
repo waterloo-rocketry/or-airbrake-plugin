@@ -60,12 +60,12 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
         if (isAlwaysOpen()) {
             controller = new AlwaysOpenController(getAlwaysOpenExt());
         } else {
-            controller = new PIDController((float) getTargetApogee(), (float) getKp(), (float) getKi(), (float) getKd(), (float) getISatmax());
+            controller = new PIDController((float) getTargetApogee(), (float) getKp(), (float) getKi(), (float) getKd(), (float) getISatmax(), (float) getExtRef());
         }
 
         Airbrakes airbrakes = new SimulatedAirbrakes();
         Noise noise = isNoisy() ? new Noise(getStddevPositionZ(), getStddevVelocityX(), getStddevVelocityY(), getStddevVelocityZ()) : null;
-        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller, noise, getExtTime()));
+        conditions.getSimulationListenerList().add(new AirbrakePluginSimulationListener(airbrakes, controller, noise, getExtTime(), getExtRef()));
     }
 
     //
@@ -187,6 +187,15 @@ public class AirbrakePlugin extends AbstractSimulationExtension {
 
     public void setExtTime(double time) {
         config.put("ExtTime", time);
+        fireChangeEvent();
+    }
+
+    public double getExtRef() {
+        return config.getDouble("ExtRef", 0.58);
+    }
+
+    public void setExtRef(double extRef) {
+        config.put("ExtRef", extRef);
         fireChangeEvent();
     }
 }
