@@ -99,7 +99,11 @@ public class AirbrakePluginSimulationListener extends AbstractSimulationListener
         if (isExtensionAllowed(status)) {
             // Get latest flight conditions and airbrake extension
             FlightDataBranch flightData = status.getFlightData();
-            final double airbrakeExt = flightData.getLast(airbrakeExtDataType);
+            final double airbrakeExt = airbrakes.getAppliedAirbrakesExtension(
+                    flightData.get(FlightDataType.TYPE_TIME),
+                    flightData.get(airbrakeExtDataType),
+                    status.getSimulationTime()
+            );
 
             final double altitude = status.getRocketPosition().z + status.getSimulationConditions().getLaunchSite().getAltitude();
 
