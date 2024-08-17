@@ -78,7 +78,7 @@ public class SimulatedDragForceInterpolator implements Interpolator<SimulatedDra
         });
         double output = new LinearInterpolator(perExt).compute(data.extension);
         assert output >= 0.0;
-        output *= 1.27;
+        output *= 1.14;
         return output;
     }
 }
