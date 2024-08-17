@@ -12,8 +12,8 @@ Java_com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations_interpolateDr
 
 JNIEXPORT jfloat JNICALL
 Java_com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations_getMaxAltitude(
-    JNIEnv*, jclass, jfloat velY, jfloat velX, jfloat altitude) {
-    return getMaxAltitude_m(velY, velX, altitude);
+    JNIEnv*, jclass, jfloat extRef, jfloat velY, jfloat velX, jfloat altitude) {
+    return getMaxAltitude_m(extRef, velY, velX, altitude);
 }
 
 void loadControllerState(ControllerState* state, JNIEnv* env, jclass cls,
@@ -52,10 +52,10 @@ Java_com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations_00024Controll
 JNIEXPORT jfloat JNICALL
 Java_com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations_00024ControllerState_updateController(
     JNIEnv* env, jobject obj, jfloat kp, jfloat ki, jfloat kd, jfloat i_satmax,
-    jfloat time_ms, jfloat trajectory, jfloat target) {
+    jfloat ext_ref, jfloat time_ms, jfloat trajectory, jfloat target) {
     jclass cls = env->GetObjectClass(obj);
     ControllerParams params = {
-        .kp = kp, .ki = ki, .kd = kd, .i_satmax = i_satmax};
+        .kp = kp, .ki = ki, .kd = kd, .i_satmax = i_satmax, .ext_ref = ext_ref};
     ControllerState state;
     loadControllerState(&state, env, cls, obj);
     float ans = updateController(&params, &state, time_ms, trajectory, target);

@@ -18,10 +18,10 @@ JNIEXPORT jfloat JNICALL Java_com_waterloorocketry_airbrakeplugin_jni_ProcessorC
 /*
  * Class:     com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations
  * Method:    getMaxAltitude
- * Signature: (FFF)F
+ * Signature: (FFFF)F
  */
 JNIEXPORT jfloat JNICALL Java_com_waterloorocketry_airbrakeplugin_jni_ProcessorCalculations_getMaxAltitude
-  (JNIEnv *, jclass, jfloat, jfloat, jfloat);
+  (JNIEnv *, jclass, jfloat, jfloat, jfloat, jfloat);
 
 #ifdef __cplusplus
 }

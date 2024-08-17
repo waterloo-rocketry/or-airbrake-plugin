@@ -60,9 +60,9 @@ public class PidTuner {
 
         Simulation simulation = new Simulation(doc, doc.getRocket());
 
-        Controller controller = new PIDController(TARGET_APOGEE_M, Kp, Ki, Kd, 10);
+        Controller controller = new PIDController(TARGET_APOGEE_M, Kp, Ki, Kd, 10, 0.58F);
         Airbrakes airbrakes = new SimulatedAirbrakes();
-        SimulationListener listener = new AirbrakePluginSimulationListener(airbrakes, controller, new Noise(10, 0.5, 0.5, 2), 9);
+        SimulationListener listener = new AirbrakePluginSimulationListener(airbrakes, controller, new Noise(10, 0.5, 0.5, 2), 9, 0.58);
 
         simulation.simulate(listener);
         System.out.println("max altitude: " + simulation.getSimulatedData().getMaxAltitude());
